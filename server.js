@@ -28,12 +28,16 @@ let sessionStore = undefined;
 
 if (process.env.NODE_ENV == 'production') {
 	const client = new Redis({
-    path: process.env.REDIS_URL,
-    reconnectOnError(err) {
-      console.error(err);
-      return false;
-    }
-  });
+		host: process.env.REDIS_HOST,
+		password: process.env.REDIS_PASSWORD,
+		port: process.env.REDIS_PORT,
+		user: process.env.REDIS_USER,
+		tls: {},
+		reconnectOnError(err) {
+			console.error(err);
+			return false;
+		},
+	});
 	client.on('error', (error) => {
 		console.error(error);
 	});
