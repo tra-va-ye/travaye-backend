@@ -42,6 +42,10 @@ if (process.env.NODE_ENV == 'production') {
 		console.error(error);
 	});
 
+	client.on('connect', () => {
+		console.log('Connected to redis db');
+	});
+
 	sessionStore = new RedisStore({
 		client,
 	});
