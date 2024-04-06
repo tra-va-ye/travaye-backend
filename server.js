@@ -16,11 +16,22 @@ import { JwtPassport } from "./config/passport.js";
 import payRouter from "./routes/paystack.routes.js";
 import path from 'path';
 import { dirname } from "./lib/index.js";
+import RedisStore from 'connect-redis';
+import Redis from 'ioredis'
 
 /* CONFIGURATIONS */
 dotenv.config();
 const app = express();
 app.use(morgan("common"));
+
+let sessionStore = undefined;
+
+if (process.env.NODE_ENV == "production") {
+  sessionStore = new RedisStore({
+    client: new Redis(process.env.REDIS_URL)
+  });
+}
+
 
 
 app.set("view engine", "pug");
@@ -62,6 +73,7 @@ app.use(
     secret: "LolSecretIsHere",
     resave: true,
     saveUninitialized: true,
+    store: sessionStore
   })
 );
 app.use(cookieParser());
