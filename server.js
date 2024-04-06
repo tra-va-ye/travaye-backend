@@ -77,7 +77,8 @@ var corsOptions = {
 		process.env.NODE_ENV != 'production'
 			? '*'
 			: function (origin, callback) {
-					if (whitelist.indexOf(origin) !== -1) {
+        console.log(origin);
+					if (origin == undefined || whitelist.indexOf(origin) !== -1) {
 						callback(null, true);
 					} else {
 						callback(new Error('Not allowed by CORS'));
