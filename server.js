@@ -32,7 +32,7 @@ if (process.env.NODE_ENV == 'production') {
 		password: process.env.REDIS_PASSWORD,
 		port: process.env.REDIS_PORT,
 		user: process.env.REDIS_USER,
-		tls: {},
+		// tls: {},
 		reconnectOnError(err) {
 			console.error(err);
 			return false;
