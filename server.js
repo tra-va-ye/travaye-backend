@@ -71,6 +71,7 @@ var whitelist = [
 	'https://www.travaye-beta.netlify.app',
 	'https://travaye-frontend.vercel.app',
 	'https://www.travaye-frontend.vercel.app',
+	'https://travaye-frontend-git-staging-tra-va-yes-projects.vercel.app',
 ];
 var corsOptions = {
 	origin:
