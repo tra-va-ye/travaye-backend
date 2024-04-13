@@ -8,12 +8,13 @@ import helmet from 'helmet';
 import mongoose from 'mongoose';
 import morgan from 'morgan';
 import passport from 'passport';
+import fs from 'fs';
 // import { createLocation } from "./controllers/location.controllers.js";
 import businessRouter from './routes/business.routes.js';
 import locationRouter from './routes/location.routes.js';
 import userRouter from './routes/user.routes.js';
 
-import locationv2 from './routes/locationv2.router.js'
+import locationv2 from './routes/locationv2.router.js';
 
 import { JwtPassport } from './config/passport.js';
 import payRouter from './routes/paystack.routes.js';
@@ -28,6 +29,13 @@ const app = express();
 app.use(morgan('common'));
 
 let sessionStore = undefined;
+
+let states;
+try {
+	states = fs.readFileSync('./lib/states.json');
+} catch (error) {
+	console.error(error);
+}
 
 if (process.env.NODE_ENV == 'production') {
 	const client = new Redis({
@@ -81,7 +89,7 @@ var corsOptions = {
 		process.env.NODE_ENV != 'production'
 			? '*'
 			: function (origin, callback) {
-        console.log(origin);
+					console.log(origin);
 					if (origin == undefined || whitelist.indexOf(origin) !== -1) {
 						callback(null, true);
 					} else {
@@ -183,6 +191,9 @@ app.use('/api/business', businessRouter);
 app.use('/api/location', locationRouter);
 app.use('/api/locations', locationv2);
 app.use('/api/pay', payRouter);
+app.get('/api/states', (req, res) => {
+	return res.json(JSON.parse(states));
+});
 app.get(
 	'/api/categories',
 	passport.authenticate(['business', 'jwt'], { session: false }),
