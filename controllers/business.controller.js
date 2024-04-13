@@ -173,8 +173,6 @@ export const completeBusinessRegistration = async (req, res) => {
     const proofOfAddress = req.files.proofOfAddress;
 
     const business = req.user;
-    console.log(req.user);
-    console.log(businessName);
     business.businessName = businessName;
     business.businessAddress = businessAddress;
     business.businessCategory = businessCategory

@@ -12,6 +12,9 @@ import passport from 'passport';
 import businessRouter from './routes/business.routes.js';
 import locationRouter from './routes/location.routes.js';
 import userRouter from './routes/user.routes.js';
+
+import locationv2 from './routes/locationv2.router.js'
+
 import { JwtPassport } from './config/passport.js';
 import payRouter from './routes/paystack.routes.js';
 import path from 'path';
@@ -178,6 +181,7 @@ JwtPassport(passport);
 app.use('/api/user', userRouter);
 app.use('/api/business', businessRouter);
 app.use('/api/location', locationRouter);
+app.use('/api/locations', locationv2);
 app.use('/api/pay', payRouter);
 app.get(
 	'/api/categories',
