@@ -11,7 +11,7 @@ const router = Router();
 
 router.get('/', async (req, res) => {
 	try {
-		const query = Business.find(req.query).select([
+		const query = Business.find({}).select([
 			...cardFieldsProjection,
 			...excludeBusinessFieldsProjection,
 			...excludedFieldsProjection,

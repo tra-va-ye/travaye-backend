@@ -7,7 +7,8 @@ import {
 	verifyUser,
 	getUser,
 	updateProfilePhoto,
-	resendVerification
+	resendVerification,
+	forgotPassword
 } from '../controllers/user.controller.js';
 import { upload } from '../config/multer.js';
 
@@ -60,5 +61,7 @@ userRouter
 		upload.single('picture'),
 		updateProfilePhoto
 	);
+
+userRouter.post('/forgot-password', forgotPassword);
 
 export default userRouter;

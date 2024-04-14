@@ -46,17 +46,20 @@ export const registerUser = async (req, res, next) => {
 			try {
 				const mail = render(
 					readFileSync(
-						path.resolve(dirname(import.meta.url), "../views/email/verification-code.pug")
+						path.resolve(
+							dirname(import.meta.url),
+							'../views/email/verification-code.pug'
+						)
 					),
 					{
 						code: verificationCode,
-						filename: 'verification-code'
+						filename: 'verification-code',
 					}
 				);
-	
+
 				await sendEmail(email, mail, 'E-mail Verification');
 			} catch (error) {
-				console.error(error)
+				console.error(error);
 			}
 			return next();
 		}
@@ -153,4 +156,37 @@ export const resendVerification = async (req, res, next) => {
 
 	await sendVerifyEmail(req.user.email, req.user.verificationCode);
 	return res.status(200).json({ message: 'Successful' });
+};
+
+export const forgotPassword = async (req, res) => {
+	console.log(req.body);
+	const { email } = req.body;
+
+	const user = await User.findOne({ email }); //.or([{ username: email }]).exec();
+
+	if (!user) {
+		return res.status(400).json({ message: 'Bad Request' });
+	}
+
+	const token = jwt.sign(
+		{
+			id: user.id,
+		},
+		process.env.JWT_SECRET,
+		{
+			expiresIn: '1d',
+		}
+	);
+
+	// const redis
+
+	const url = `https://${req.host}/reset-password?token=${token}`;
+	const message = `Click the link to reset your password <a href='${url}'>link</a>`;
+
+	sendEmail(user.email, message, 'Password Reset').catch((err) => {
+		console.error(err);
+	});
+	return res.json({
+		ok: true,
+	});
 };
