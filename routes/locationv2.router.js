@@ -11,11 +11,17 @@ const router = Router();
 
 router.get('/', async (req, res) => {
 	try {
-		const businesses = await Business.find({}).select([
+		const query = Business.find(req.query).select([
 			...cardFieldsProjection,
+			...excludeBusinessFieldsProjection,
 			...excludedFieldsProjection,
-			...excludeBusinessFieldsProjection
 		]);
+		const businesses = await Business.paginate(query, {
+			customLabels: {
+				docs: 'data',
+				meta: 'meta',
+			},
+		});
 
 		return res.json(businesses);
 	} catch (error) {

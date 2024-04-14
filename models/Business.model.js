@@ -5,6 +5,7 @@
 import mongoose from 'mongoose';
 import findOrCreate from 'mongoose-findorcreate';
 import passportLocalMongoose from 'passport-local-mongoose';
+import paginate from 'mongoose-paginate-v2';
 
 // User Schema Structure
 const businessSchema = new mongoose.Schema(
@@ -131,6 +132,7 @@ const options = {
 };
 businessSchema.plugin(passportLocalMongoose, options);
 businessSchema.plugin(findOrCreate);
+businessSchema.plugin(paginate);
 
 // businessSchema.method.toJSON = function () {
 // 	const userObject = this.toObject();
