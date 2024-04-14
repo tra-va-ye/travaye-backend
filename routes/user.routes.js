@@ -8,9 +8,12 @@ import {
 	getUser,
 	updateProfilePhoto,
 	resendVerification,
-	forgotPassword
+	forgotPassword,
+	resetPassword,
 } from '../controllers/user.controller.js';
 import { upload } from '../config/multer.js';
+import { validateBody } from '../middleware/validations.js';
+import Joi from 'joi';
 
 // Created an express routing instance
 const userRouter = express.Router();
@@ -57,11 +60,25 @@ userRouter
 userRouter
 	.route('/profile-photo')
 	.post(
-    passport.authenticate(["business", "jwt"], {session: false}),
+		passport.authenticate(['business', 'jwt'], { session: false }),
 		upload.single('picture'),
 		updateProfilePhoto
 	);
 
 userRouter.post('/forgot-password', forgotPassword);
+userRouter.post(
+	'/reset-password',
+	validateBody(
+		Joi.object({
+			password: Joi.string().required(),
+			email: Joi.string().required(),
+			token: Joi.string().required(),
+		}),
+		{
+			allowUnknown: true
+		}
+	),
+	resetPassword
+);
 
 export default userRouter;

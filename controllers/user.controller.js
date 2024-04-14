@@ -7,6 +7,7 @@ import { sendEmail } from '../services/mail/mail.service.js';
 import { render } from 'pug';
 import { dirname } from '../lib/index.js';
 import { readFileSync } from 'fs';
+import Cache from '../lib/cache.js';
 
 export const registerUser = async (req, res, next) => {
 	const username = req.body?.username;
@@ -159,7 +160,8 @@ export const resendVerification = async (req, res, next) => {
 };
 
 export const forgotPassword = async (req, res) => {
-	console.log(req.body);
+	const cache = new Cache();
+	const client = cache.getClient();
 	const { email } = req.body;
 
 	const user = await User.findOne({ email }); //.or([{ username: email }]).exec();
@@ -171,6 +173,7 @@ export const forgotPassword = async (req, res) => {
 	const token = jwt.sign(
 		{
 			id: user.id,
+			action: 'reset-password',
 		},
 		process.env.JWT_SECRET,
 		{
@@ -178,9 +181,9 @@ export const forgotPassword = async (req, res) => {
 		}
 	);
 
-	// const redis
+	// client.setex(`forgot-password:${user.id}`, 60 * 60 * 24, token);
 
-	const url = `https://${req.host}/reset-password?token=${token}`;
+	const url = `https://${req.hostname}/reset-password?token=${token}&email=${user.email}`;
 	const message = `Click the link to reset your password <a href='${url}'>link</a>`;
 
 	sendEmail(user.email, message, 'Password Reset').catch((err) => {
@@ -189,4 +192,31 @@ export const forgotPassword = async (req, res) => {
 	return res.json({
 		ok: true,
 	});
+};
+
+export const resetPassword = async (req, res) => {
+	const { token, password } = req.body;
+
+	try {
+		const payload = jwt.verify(token, process.env.JWT_SECRET, {
+			complete: false,
+		});
+		const user = await User.findById(payload.id);
+
+		if (!user) {
+			return res.status(400).json({
+				message: 'Bad request',
+				error: 'Bad request',
+			});
+		}
+
+		user.password = bcrypt.hashSync(password, bcrypt.genSaltSync(13));
+		await user.save();
+
+		return res.status(200).json({
+			ok: true,
+		});
+	} catch (err) {
+		return res.status(500).json({ error: err.message });
+	}
 };
