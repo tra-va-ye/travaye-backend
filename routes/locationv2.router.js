@@ -9,6 +9,8 @@ import { planTrip } from '../controllers/location.controllers.js';
 
 const router = Router();
 
+const exclusions = [...excludeBusinessFieldsProjection, ...cardFieldsProjection, ...excludedFieldsProjection];
+
 router.get('/', async (req, res) => {
 	try {
 		const query = Business.find({}).select([
@@ -32,7 +34,7 @@ router.get('/plan', planTrip);
 
 router.get('/:id', async (req, res) => {
 	try {
-		const business = await Business.findById(id);
+		const business = await Business.findById(req.params.id).select(exclusions);
 
 		return res.json(business);
 	} catch (error) {
