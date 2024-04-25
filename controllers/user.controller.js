@@ -73,34 +73,32 @@ export const loginUser = async (req, res, next) => {
 
 	try {
 		const user = await User.findOne({ username: username });
-	
+
 		if (!user) {
 			return res.status(400).json({
 				error: 'Invalid username or password',
 			});
 		}
-	
+
 		const check = await bcrypt.compare(password, user.password);
 		if (!check) {
 			return res.status(400).json({
 				error: 'Invalid username or password',
 			});
 		}
-	
+
 		const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
 			expiresIn: '1d',
 		});
 		user.password = undefined;
 		user.verificationCode = undefined;
 		return res.status(200).json({ token, user });
-
 	} catch (err) {
 		console.log(err);
 		return res.status(500).json({
 			message: err.message,
-		})
+		});
 	}
-
 };
 // Logout
 export const logUserOut = (req, res) => {
@@ -127,9 +125,9 @@ export const verifyUser = async (req, res) => {
 };
 
 export const getUser = async (req, res) => {
-	const user = req.user;
-	user.password = undefined;
-	user.verificationCode = undefined;
+	const user = await User.findById(req.user.id, '-password -verificationCode').populate('likedLocations');
+	// user.password = undefined;
+	// user.verificationCode = undefined;
 	return res.status(200).json({ user });
 };
 
@@ -192,7 +190,9 @@ export const forgotPassword = async (req, res) => {
 
 	// client.setex(`forgot-password:${user.id}`, 60 * 60 * 24, token);
 
-	let hostname = process.env.NODE_ENV="production" ? "travaye.ng" : "travaye-frontend-git-staging-tra-va-yes-projects.vercel.app/" 
+	let hostname = (process.env.NODE_ENV = 'production'
+		? 'travaye.ng'
+		: 'travaye-frontend-git-staging-tra-va-yes-projects.vercel.app/');
 	const url = `https://${hostname}/reset-password?token=${token}&email=${user.email}`;
 	const message = `Click the link to reset your password <a href='${url}'>link</a>`;
 
