@@ -2,7 +2,7 @@
 // Where A Model itself is just the instance of the Schema Structure to apply CRUD in the database .
 
 // Necessary Imports
-import mongoose from 'mongoose';
+import mongoose, { Schema } from 'mongoose';
 import findOrCreate from 'mongoose-findorcreate';
 import passportLocalMongoose from 'passport-local-mongoose';
 import paginate from 'mongoose-paginate-v2';
@@ -121,6 +121,18 @@ const businessSchema = new mongoose.Schema(
 			type: Boolean,
 			default: false,
 		},
+		description: {
+			type: String
+		},
+		likes: {
+			type: [Schema.Types.ObjectId],
+			ref: 'User',
+			default: [],
+		},
+		reviews: {
+			type: [Schema.Types.ObjectId],
+			ref: 'BusinessReview'
+		},
 		profilePhoto: String,
 	},
 	{
@@ -133,6 +145,14 @@ const options = {
 businessSchema.plugin(passportLocalMongoose, options);
 businessSchema.plugin(findOrCreate);
 businessSchema.plugin(paginate);
+
+businessSchema.virtual('likeCount').get(function () {
+	return this.likes?.length || 0;
+});
+
+businessSchema.methods.toJSON = function () {
+	return { ...this._doc, usersThatLiked: this.likes };
+};
 
 // businessSchema.method.toJSON = function () {
 // 	const userObject = this.toObject();

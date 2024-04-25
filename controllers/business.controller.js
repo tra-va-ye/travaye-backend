@@ -166,6 +166,7 @@ export const completeBusinessRegistration = async (req, res) => {
       businessPriceRangeFrom,
       businessPriceRangeTo,
       businessSubCategory,
+      businessDescription,
     } = req?.body;
 
     const businessLocationImages = req.files.businessLocationImages;

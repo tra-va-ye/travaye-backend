@@ -23,6 +23,8 @@ import { dirname } from './lib/index.js';
 import RedisStore from 'connect-redis';
 import Redis from 'ioredis';
 
+import Logger from '@peteradeojo/laas-sdk';
+
 /* CONFIGURATIONS */
 dotenv.config();
 const app = express();
@@ -278,6 +280,13 @@ app.get(
 app.use((err, req, res, next) => {
 	if (err) {
 		console.log(err);
+		Logger.sendLog({
+			level: 'error',
+			text: err.message,
+			context: {
+				stack: err.stack
+			}
+		}, process.env.DOPPLER_TOKEN);s
 		res.status(500).json({ error: err.message });
 	}
 });

@@ -11,7 +11,7 @@ import {
 // This function works as an organizer for multiple images to avoid images having same name
 dotenv.config();
 
-const saveImagesWithModifiedName = async (files) => {
+export const saveImagesWithModifiedName = async (files = []) => {
 	const imageUrls = [];
 	// console.log(files);
 	try {
@@ -267,9 +267,9 @@ export const reviewLocation = async (req, res) => {
 			req.body;
 		const files = req.files;
 
-		if (!files || files.length === 0) {
-			throw new Error('No files uploaded!');
-		}
+		// if (!files || files.length === 0) {
+		// 	throw new Error('No files uploaded!');
+		// }
 		const images = req.files;
 		const location = await Location.findById(locationID);
 		const reviewer = await User.findById(reviewerID);
