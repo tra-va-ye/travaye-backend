@@ -16,7 +16,7 @@ import { upload } from '../config/multer.js';
 
 const router = Router();
 
-const exclusions = [
+export const exclusions = [
 	...excludeBusinessFieldsProjection,
 	...cardFieldsProjection,
 	...excludedFieldsProjection,

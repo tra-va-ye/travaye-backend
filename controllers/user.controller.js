@@ -8,6 +8,7 @@ import { render } from 'pug';
 import { dirname } from '../lib/index.js';
 import { readFileSync } from 'fs';
 import Cache from '../lib/cache.js';
+import { exclusions } from '../routes/locationv2.router.js';
 
 export const registerUser = async (req, res, next) => {
 	const username = req.body?.username;
@@ -125,7 +126,10 @@ export const verifyUser = async (req, res) => {
 };
 
 export const getUser = async (req, res) => {
-	const user = await User.findById(req.user.id, '-password -verificationCode').populate('likedLocations');
+	const user = await User.findById(req.user.id, '-password -verificationCode').populate({
+		path: 'likedLocations',
+		select: [...exclusions],
+	});
 	// user.password = undefined;
 	// user.verificationCode = undefined;
 	return res.status(200).json({ user });
