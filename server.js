@@ -34,7 +34,7 @@ let sessionStore = undefined;
 
 let states;
 try {
-	states = fs.readFileSync('./lib/states.json');
+	states = fs.readFileSync('./lib/data.json');
 } catch (error) {
 	console.error(error);
 }
