@@ -3,8 +3,6 @@ import BusinessReview from '../models/BusinessReview.js';
 import { User } from '../models/User.model.js';
 import { saveImagesWithModifiedName } from './location.controllers.js';
 
-import laas from '@peteradeojo/laas-sdk';
-
 export const transformBusinessToLocation = (business) => {
 	return {
 		id: business.id,

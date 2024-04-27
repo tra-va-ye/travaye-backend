@@ -14,8 +14,8 @@ const businessReview = new Schema({
 		ref: 'user',
 	},
 	reviewerFullname: String,
-	reviewerDescription: String,
-	reviewerRating: Number,
+	reviewDescription: String,
+	reviewRating: Number,
 });
 
 export default mongoose.model('BusinessReview', businessReview);
