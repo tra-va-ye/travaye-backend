@@ -206,6 +206,14 @@ export const planTrip = async (req, res) => {
 		if (category) {
 			query.or([{ businessCategory: { $in: [category, subcategory] } }]);
 		}
+		if (subcategory) {
+			query.or([{ businessSubCategory: subcategory }]);
+		}
+		
+		const maxBudget = Number(budget);
+		if (maxBudget) {
+			query.or([{ businessBudgetFrom: { $lte: maxBudget } }]);
+		}
 
 		const locations = await query
 			.skip((page - 1) * count)

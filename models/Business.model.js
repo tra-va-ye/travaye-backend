@@ -165,6 +165,8 @@ businessSchema.methods.toJSON = function () {
 // Exporting Model
 export const Business = mongoose.model('Business', businessSchema);
 
+// These are projection rules used to secure sensitive information
+// Always apply them in queries where they are not needed
 export const cardFieldsProjection = [
 	'-addedCard',
 	'-businessCardBin',
