@@ -1,7 +1,7 @@
 import bcrypt from "bcryptjs";
 import { readFileSync } from 'fs';
 import path from 'path';
-import { Business } from "../models/Business.model.js";
+import { Business, cardFieldsProjection, excludeBusinessFieldsProjection } from "../models/Business.model.js";
 
 import jwt from "jsonwebtoken";
 import sendVerifyEmail from "../services/index.service.js";
@@ -97,7 +97,10 @@ export const loginBusiness = async (req, res, next) => {
   // })(req, res, next);
   const { businessEmail: email, password } = req.body;
 
-  const business = await Business.findOne({ businessEmail: email });
+  const business = await Business.findOne({ businessEmail: email }, [
+    ...excludeBusinessFieldsProjection,
+    ...cardFieldsProjection,
+  ]).populate('reviews');
 
   if (!business) {
     return res.status(400).json({
