@@ -192,22 +192,22 @@ export const planTrip = async (req, res) => {
 		});
 
 		if (city) {
-			query.or([{ businessCity: { $regex: new RegExp(city, 'i') } }]);
+			query.and([{ businessCity: { $regex: new RegExp(city, 'i') } }]);
 		}
 
 		if (state) {
-			query.or([{ businessState: { $regex: new RegExp(state, 'i') } }]);
+			query.and([{ businessState: { $regex: new RegExp(state, 'i') } }]);
 		}
 
 		if (lga) {
-			query.or([{ businessLGA: { $regex: new RegExp(lga, 'i') } }]);
+			query.and([{ businessLGA: { $regex: new RegExp(lga, 'i') } }]);
 		}
 
 		if (category) {
-			query.or([{ businessCategory: { $in: [category, subcategory] } }]);
+			query.and([{ businessCategory: { $in: [category, subcategory] } }]);
 		}
 		if (subcategory) {
-			query.or([{ businessSubCategory: subcategory }]);
+			query.and([{ businessSubCategory: subcategory }]);
 		}
 		
 		const maxBudget = Number(budget);
