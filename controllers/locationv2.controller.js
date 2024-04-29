@@ -100,6 +100,7 @@ export const reviewLocation = async (req, res) => {
 			reviewerID,
 			reviewerFullname: reviewer?.fullName,
 			reviewImagePaths: await saveImagesWithModifiedName(images ?? []),
+			reviewing: location.id,
 		};
 
 		const review = await BusinessReview.create(newReview);
