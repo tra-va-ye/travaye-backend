@@ -203,6 +203,7 @@ app.get(
 		return res.json([
 			{
 				name: 'Entertainment Venues',
+				slug: 'entertainment-venue',
 				sub: [
 					{ name: 'Cinema', slug: 'cinema' },
 					{ name: 'Arcade', slug: 'arcade' },
@@ -211,6 +212,7 @@ app.get(
 			},
 			{
 				name: 'Special Events',
+				slug: 'special-event',
 				sub: [
 					{ name: 'Festivals & Parades', slug: 'festivals-and-parades' },
 					{ name: 'Party', slug: 'party' },
@@ -219,11 +221,12 @@ app.get(
 			},
 			{
 				name: 'Wildlife Attractions',
+				slug: 'wildlife-attraction',
 				sub: [{ name: 'Zoo', slug: 'zoo' }],
 			},
 			{
 				name: 'History & Arts',
-
+				slug: 'history-and-arts',
 				sub: [
 					{ name: 'Museum & Art Gallery', slug: 'museum-and-artGallery' },
 					{
@@ -234,6 +237,7 @@ app.get(
 			},
 			{
 				name: 'Food & Drinks',
+				slug: 'food-and-drink',
 				sub: [
 					{ name: 'Restaurants & Cafe', slug: 'restaurant-and-cafe' },
 					{ name: 'Bar & Lounge', slug: 'bar-and-lounge' },
@@ -242,6 +246,7 @@ app.get(
 			},
 			{
 				name: 'Sports & Recreation Centres',
+				slug: 'sports-and-recreation',
 				sub: [
 					{
 						name: 'Stadiums',
@@ -253,6 +258,7 @@ app.get(
 			},
 			{
 				name: 'Historial & Heritage Attractions',
+				slug: 'historical-and-heritage',
 				sub: [
 					{
 						name: 'Mountains & Caves & Hills & Islands',
@@ -263,6 +269,7 @@ app.get(
 			},
 			{
 				name: 'Parks & Relaxation Spots',
+				slug: 'parks',
 				sub: [
 					{
 						name: 'Spa',

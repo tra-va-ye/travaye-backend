@@ -1,7 +1,7 @@
 import bcrypt from "bcryptjs";
 import { readFileSync } from 'fs';
 import path from 'path';
-import { Business, cardFieldsProjection, excludeBusinessFieldsProjection } from "../models/Business.model.js";
+import { Business, cardFieldsProjection, excludeBusinessFieldsProjection, excludedFieldsProjection } from "../models/Business.model.js";
 
 import jwt from "jsonwebtoken";
 import sendVerifyEmail from "../services/index.service.js";
@@ -126,11 +126,15 @@ export const loginBusiness = async (req, res, next) => {
   });
 };
 
-export const currentUser = (req, res) => {
-  const user = req.user;
-  user.password = undefined;
-  user.verificationCode = undefined;
-  return res.status(200).json({ user });
+export const currentUser = async (req, res) => {
+  // const user = req.user;
+  // user.password = undefined;
+  // user.verificationCode = undefined;
+  const business = await Business.findById(req.user.id, [
+    ...cardFieldsProjection,
+    ...excludedFieldsProjection,
+  ]).populate('reviews');
+  return res.status(200).json({ user: business });
 };
 // Logout
 export const logBusinessOut = (req, res) => {
