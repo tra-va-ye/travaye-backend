@@ -9,7 +9,7 @@ import { planTrip } from '../controllers/location.controllers.js';
 import {
 	likeLocation,
 	reviewLocation,
-	transformBusinessToLocation,
+	unlikeLocation,
 } from '../controllers/locationv2.controller.js';
 import passport from 'passport';
 import { upload } from '../config/multer.js';
