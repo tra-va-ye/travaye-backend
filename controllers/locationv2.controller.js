@@ -18,10 +18,10 @@ export const transformBusinessToLocation = (business) => {
 		locationCategory: business.businessCategory,
 		locationSubCategory: business.businessSubCategory,
 		locationReviews: business.reviews,
-    locationImagePath: business.businessLocationImages,
-    createdAt: business.createdAt,
-    updatedAt: business.updatedAt,
-    usersThatLiked: business.likes,
+		locationImagePath: business.businessLocationImages,
+		createdAt: business.createdAt,
+		updatedAt: business.updatedAt,
+		usersThatLiked: business.likes,
 	};
 };
 
@@ -113,5 +113,40 @@ export const reviewLocation = async (req, res) => {
 	} catch (error) {
 		console.error(error);
 		return res.status(500).json({ error: 'Internal Server Error' });
+	}
+};
+
+/**
+ * @type {import('express').RequestHandler} unlikeLocation
+ */
+export const unlikeLocation = async (req, res) => {
+	try {
+		const user = req.user;
+		const locationID = req.body?.locationName;
+
+		// Filter the location out from the liked locations list
+		user.likedLocations =
+			user.likedLocations?.filter((location) => location != locationID) ??
+			[];
+		// Save the updated user to the database
+		await user.save();
+
+		return res.status(200).json({
+			ok: true,
+		});
+	} catch (error) {
+		// laas.sendLog(
+		// 	{
+		// 		level: 'error',
+		// 		text: error.message,
+		// 		context: {
+		// 			user: req.user,
+		// 			action: 'like location',
+		// 			...req.body,
+		// 		},
+		// 	},
+		// 	process.env.DOPPLER_TOKEN
+		// );
+		return res.status(500).json({ error: error.message });
 	}
 };

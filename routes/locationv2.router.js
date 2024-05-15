@@ -61,6 +61,11 @@ router.post(
 	likeLocation
 );
 router.post(
+	'/unlike',
+	passport.authenticate(['jwt', 'business'], { session: false }),
+	unlikeLocation
+);
+router.post(
 	'/review',
 	passport.authenticate(['jwt'], { session: false }),
 	upload.array('pictures'),
