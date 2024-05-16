@@ -191,30 +191,50 @@ export const planTrip = async (req, res) => {
 			businessVerified: { $in: ['pending', 'true'] },
 		});
 
-		if (city) {
+		if (city.length > 0) {
 			query.and([{ businessCity: { $regex: new RegExp(city, 'i') } }]);
 		}
 
-		if (state) {
+		if (state.length > 0) {
 			query.and([{ businessState: { $regex: new RegExp(state, 'i') } }]);
 		}
 
-		if (lga) {
+		if (lga.length > 0) {
 			query.and([{ businessLGA: { $regex: new RegExp(lga, 'i') } }]);
 		}
 
-		if (category) {
+		if (category.length > 0) {
 			query.and([{ businessCategory: category }]);
 		}
-		if (subcategory) {
+		if (subcategory.length > 0) {
 			query.and([{ businessSubCategory: subcategory }]);
 		}
 
 		const maxBudget = Number(budget);
 		if (maxBudget > 20000) {
-			query.and([{ businessBudgetFrom: { $gte: 20000 } }]);
-		} else if (maxBudget) {
-			query.and([{ businessBudgetFrom: { $lte: maxBudget } }]);
+			query.and([{ businessPriceRangeFrom: { $gte: 20000 } }]);
+		} else if (maxBudget !== 0) {
+			switch (maxBudget) {
+				case 5000:
+					query.and([
+						{ businessPriceRangeFrom: { $gt: 0 } },
+						{ businessPriceRangeTo: { $lte: 5000 } },
+					]);
+					break;
+				case 10000:
+					query.and([
+						{ businessPriceRangeFrom: { $gt: 5000 } },
+						{ businessPriceRangeTo: { $lte: 10000 } },
+					]);
+					break;
+				case 20000:
+					query.and([
+						{ businessPriceRangeFrom: { $gt: 10000 } },
+						{ businessPriceRangeTo: { $lte: 20000 } },
+					]);
+					break;
+				default:
+			}
 		}
 
 		const locations = await query
