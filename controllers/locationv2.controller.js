@@ -42,20 +42,17 @@ export const likeLocation = async (req, res) => {
 		}
 
 		// Check if the location is already in the liked locations list
-		// if (user.likedLocations.includes(locationName)) {
-		// 	return res.status(400).json({ error: 'Location is already liked' });
-		// }
-		if (location.likes.includes(user._id)) {
-			return res.status(201).json(transformBusinessToLocation(location));
-			// return res.json({ ok: true, error: 'Location is already liked' });
+		if (!location.likes.includes(user._id)) {
+			location.likes.push(user._id);
+			await location.save();
 		}
 
 		// Add the location to the liked locations list
-		user.likedLocations.push(locationID);
-		location && location.likes.push(user._id);
-		// Save the updated user to the database
-		await user.save();
-		await location.save();
+		if (!user.likedLocations.find((location) => location.id == locationID)) {
+			user.likedLocations.push(location);
+			// Save the updated user to the database
+			await user.save();
+		}
 
 		return res.status(201).json(transformBusinessToLocation(location));
 	} catch (error) {
@@ -71,6 +68,7 @@ export const likeLocation = async (req, res) => {
 		// 	},
 		// 	process.env.DOPPLER_TOKEN
 		// );
+		console.error(error);
 		return res.status(500).json({ error: error.message });
 	}
 };
@@ -124,11 +122,15 @@ export const unlikeLocation = async (req, res) => {
 		const user = req.user;
 		const locationID = req.body?.locationName;
 
+		console.log(locationID);
+
 		// Filter the location out from the liked locations list
 		user.likedLocations =
-			user.likedLocations?.filter((location) => location != locationID) ??
-			[];
+			user.likedLocations?.filter((location) => {
+				return location.id != locationID;
+			}) ?? [];
 		// Save the updated user to the database
+		console.log(user);
 		await user.save();
 
 		return res.status(200).json({
@@ -147,6 +149,7 @@ export const unlikeLocation = async (req, res) => {
 		// 	},
 		// 	process.env.DOPPLER_TOKEN
 		// );
+		console.error(error);
 		return res.status(500).json({ error: error.message });
 	}
 };

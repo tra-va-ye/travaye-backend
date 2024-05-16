@@ -14,7 +14,7 @@ export function JwtPassport(passport) {
 	passport.use(
 		new JWTStrategy(options, async function (payload, done) {
 			try {
-				const user = await User.findById(payload.id);
+				const user = await User.findById(payload.id).populate('likedLocations');
 				if (!user) {
 					return done(null, false, { message: 'Unauthorized.' });
 				}
