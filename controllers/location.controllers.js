@@ -204,15 +204,17 @@ export const planTrip = async (req, res) => {
 		}
 
 		if (category) {
-			query.and([{ businessCategory: { $in: [category, subcategory] } }]);
+			query.and([{ businessCategory: category }]);
 		}
 		if (subcategory) {
 			query.and([{ businessSubCategory: subcategory }]);
 		}
-		
+
 		const maxBudget = Number(budget);
-		if (maxBudget) {
-			query.or([{ businessBudgetFrom: { $lte: maxBudget } }]);
+		if (maxBudget > 20000) {
+			query.and([{ businessBudgetFrom: { $gte: 20000 } }]);
+		} else if (maxBudget) {
+			query.and([{ businessBudgetFrom: { $lte: maxBudget } }]);
 		}
 
 		const locations = await query
