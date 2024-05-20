@@ -194,7 +194,7 @@ export const forgotPassword = async (req, res) => {
 
 	// client.setex(`forgot-password:${user.id}`, 60 * 60 * 24, token);
 
-	let hostname = (process.env.NODE_ENV = 'production'
+	let hostname = (process.env.NODE_ENV == 'production'
 		? 'travaye.ng'
 		: 'travaye-frontend-git-staging-tra-va-yes-projects.vercel.app/');
 	const url = `https://${hostname}/reset-password?token=${token}&email=${user.email}`;
