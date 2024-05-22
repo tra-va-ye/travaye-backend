@@ -110,66 +110,6 @@ app.use(
 );
 app.use(cookieParser());
 app.use(passport.initialize());
-// app.use(passport.session());
-// function SessionConstructor(userId, userGroup, details) {
-//   this.userId = userId;
-//   this.userGroup = userGroup;
-//   this.details = details;
-// }
-// passport.use(
-//   "userLocal",
-//   new LocalStrategy({ usernameField: "username" }, User.authenticate())
-// );
-// const businessStrategy = new LocalStrategy(
-//   {
-//     usernameField: "businessEmail",
-//     passwordField: "password",
-//     session: true,
-//   },
-//   async function (businessEmail, password, done) {
-//     // find user by email and password using Model2
-//     Business.findOne({ businessEmail: businessEmail })
-//       .then(async (user) => {
-//         console.log(user);
-//         if (!user) {
-//           return done(null, false, { message: "User doesn't Exist" });
-//         }
-//         const isMatch = await bcrypt.compare(password, user.password);
-//         if (!isMatch) {
-//           return done(null, false, { message: "Incorrect email or password." });
-//         }
-
-//         return done(null, user);
-//       })
-//       .catch((err) => done(err));
-//   }
-// );
-// passport.use("businessLocal", businessStrategy);
-
-// // used to serialize the user for the session
-// passport.serializeUser(function (userObject, done) {
-//   let userGroup = "User";
-//   let userPrototype = Object.getPrototypeOf(userObject);
-//   if (userPrototype === User.prototype) {
-//     userGroup = "User";
-//   } else if (userPrototype === Business.prototype) {
-//     userGroup = "Business";
-//   }
-//   let sessionContructor = new SessionConstructor(userObject.id, userGroup, "");
-//   done(null, sessionContructor);
-// });
-// // deserialize the user
-// passport.deserializeUser(function (sessionContructor, done) {
-//   if (sessionContructor.userGroup === "User") {
-//     User.findById({ _id: sessionContructor.userId }, function (err, user) {
-//       done(err, user);
-//     });
-//   } else if (sessionContructor.userGroup === "Business") {
-//     Business.findById({ _id: sessionContructor.userId }, function (err, user) {
-//       done(err, user);
-//     });
-//   }
-// });
 
 JwtPassport(passport);
 
@@ -198,7 +138,6 @@ app.get('/api/states', (req, res) => {
 });
 app.get(
 	'/api/categories',
-	passport.authenticate(['business', 'jwt'], { session: false }),
 	(req, res) => {
 		return res.json([
 			{
