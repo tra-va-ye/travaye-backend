@@ -176,7 +176,7 @@ app.get(
 			},
 			{
 				name: 'Food & Drinks',
-				slug: 'food-and-drink',
+				slug: 'food-&-drinks',
 				sub: [
 					{ name: 'Restaurants & Cafe', slug: 'restaurant-and-cafe' },
 					{ name: 'Bar & Lounge', slug: 'bar-and-lounge' },
