@@ -191,22 +191,22 @@ export const planTrip = async (req, res) => {
 			businessVerified: { $in: ['pending', 'true'] },
 		});
 
-		if (city.length > 0) {
+		if (city?.length > 0) {
 			query.and([{ businessCity: { $regex: new RegExp(city, 'i') } }]);
 		}
 
-		if (state.length > 0) {
+		if (state?.length > 0) {
 			query.and([{ businessState: { $regex: new RegExp(state, 'i') } }]);
 		}
 
-		if (lga.length > 0) {
+		if (lga?.length > 0) {
 			query.and([{ businessLGA: { $regex: new RegExp(lga, 'i') } }]);
 		}
 
-		if (category.length > 0) {
+		if (category?.length > 0) {
 			query.and([{ businessCategory: category }]);
 		}
-		if (subcategory.length > 0) {
+		if (subcategory?.length > 0) {
 			query.and([{ businessSubCategory: subcategory }]);
 		}
 

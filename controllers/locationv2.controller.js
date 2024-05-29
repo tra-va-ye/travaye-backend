@@ -101,6 +101,11 @@ export const reviewLocation = async (req, res) => {
 			reviewing: location.id,
 		};
 
+		const rating = location.rating || 0;
+		
+		location.ratingCount += 1;
+		location.rating = ((location.rating * location.ratingCount) + newReview.reviewRating) / location.ratingCount;
+
 		const review = await BusinessReview.create(newReview);
 
 		location.reviews.push(review);
@@ -152,4 +157,19 @@ export const unlikeLocation = async (req, res) => {
 		console.error(error);
 		return res.status(500).json({ error: error.message });
 	}
+};
+
+/**
+ *
+ * @type {import('express').RequestHandler} deleteReview
+ */
+export const deleteReview = async (req, res) => {
+	const { id } = req.params;
+	try {
+		await BusinessReview.deleteOne({ id });
+	} catch (err) {
+		console.error(err);
+	}
+
+	return res.status(200).json({ ok: true });
 };
