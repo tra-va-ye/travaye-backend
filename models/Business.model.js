@@ -122,7 +122,7 @@ const businessSchema = new mongoose.Schema(
 			default: false,
 		},
 		description: {
-			type: String
+			type: String,
 		},
 		likes: {
 			type: [Schema.Types.ObjectId],
@@ -131,7 +131,15 @@ const businessSchema = new mongoose.Schema(
 		},
 		reviews: {
 			type: [Schema.Types.ObjectId],
-			ref: 'BusinessReview'
+			ref: 'BusinessReview',
+		},
+		rating: {
+			type: Number,
+			default: 0,
+		},
+		ratingCount: {
+			type: Number,
+			default: 0,
 		},
 		profilePhoto: String,
 	},

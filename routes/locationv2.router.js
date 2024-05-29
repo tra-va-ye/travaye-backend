@@ -10,6 +10,7 @@ import {
 	likeLocation,
 	reviewLocation,
 	unlikeLocation,
+	deleteReview
 } from '../controllers/locationv2.controller.js';
 import passport from 'passport';
 import { upload } from '../config/multer.js';
@@ -28,7 +29,7 @@ router.get('/', async (req, res) => {
 			...cardFieldsProjection,
 			...excludeBusinessFieldsProjection,
 			...excludedFieldsProjection,
-		]).populate('reviews');
+		]).sort('-createdAt').populate('reviews');
 		const businesses = await Business.paginate(query, {
 			customLabels: {
 				docs: 'data',
@@ -71,5 +72,7 @@ router.post(
 	upload.array('pictures'),
 	reviewLocation
 );
+
+router.post('/review/:id/delete', passport.authenticate(['jwt'], { session: false }), deleteReview);
 
 export default router;
