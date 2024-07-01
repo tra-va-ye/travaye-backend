@@ -210,31 +210,8 @@ export const planTrip = async (req, res) => {
 			query.and([{ businessSubCategory: subcategory }]);
 		}
 
-		const maxBudget = Number(budget);
-		if (maxBudget > 20000) {
-			query.and([{ businessPriceRangeFrom: { $gte: 20000 } }]);
-		} else if (maxBudget !== 0) {
-			switch (maxBudget) {
-				case 5000:
-					query.and([
-						{ businessPriceRangeFrom: { $gt: 0 } },
-						{ businessPriceRangeTo: { $lte: 5000 } },
-					]);
-					break;
-				case 10000:
-					query.and([
-						{ businessPriceRangeFrom: { $gt: 5000 } },
-						{ businessPriceRangeTo: { $lte: 10000 } },
-					]);
-					break;
-				case 20000:
-					query.and([
-						{ businessPriceRangeFrom: { $gt: 10000 } },
-						{ businessPriceRangeTo: { $lte: 20000 } },
-					]);
-					break;
-				default:
-			}
+		if (budget) {
+			query.and({ budgetClass: budget });
 		}
 
 		const locations = await query

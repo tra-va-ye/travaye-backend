@@ -2,7 +2,7 @@
 // Where A Model itself is just the instance of the Schema Structure to apply CRUD in the database .
 
 // Necessary Imports
-import mongoose from 'mongoose';
+import mongoose, { Schema } from 'mongoose';
 
 // Location Schema Structure
 const locationSchema = new mongoose.Schema(
@@ -66,7 +66,8 @@ const locationSchema = new mongoose.Schema(
 			default: [],
 		},
 		budgetClass: {
-			type: String,
+			type: Schema.Types.ObjectId,
+			ref: 'Budget',
 		},
 		minPrice: {
 			type: Number,

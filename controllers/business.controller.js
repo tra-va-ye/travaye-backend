@@ -9,6 +9,7 @@ import { Location } from "../models/Location.model.js";
 import { sendEmail } from "../services/mail/mail.service.js";
 import { dirname } from "../lib/index.js";
 import { render } from "pug";
+
 const saveImagesWithModifiedName = async (files) => {
   const imageUrls = [];
   // console.log(files);
@@ -173,6 +174,7 @@ export const completeBusinessRegistration = async (req, res) => {
       businessPriceRangeFrom,
       businessPriceRangeTo,
       businessSubCategory,
+      businessBudget,
       businessDescription,
     } = req?.body;
 
@@ -202,6 +204,7 @@ export const completeBusinessRegistration = async (req, res) => {
     business.businessLGA = businessLGA;
     business.businessCity = businessCity;
     business.businessState = businessState;
+    business.budgetClass = businessBudget;
     business.businessPriceRangeFrom = businessPriceRangeFrom;
     business.businessPriceRangeTo = businessPriceRangeTo;
     business.businessVerified = "pending";
@@ -221,6 +224,7 @@ export const completeBusinessRegistration = async (req, res) => {
       locationCategory: businessCategory,
       locationAddedBy: req.user.email,
       locationSubCategory: businessSubCategory,
+      budgetClass: businessBudget,
     });
 
     await location.save();

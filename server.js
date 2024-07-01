@@ -24,6 +24,7 @@ import RedisStore from 'connect-redis';
 import Redis from 'ioredis';
 
 import Logger from '@peteradeojo/laas-sdk';
+import LocationBudget from './models/LocationBudget.js';
 
 /* CONFIGURATIONS */
 dotenv.config();
@@ -136,6 +137,9 @@ app.use('/api/pay', payRouter);
 app.get('/api/states', (req, res) => {
 	return res.json(JSON.parse(states));
 });
+app.use('/api/budgets', async (req, res) => {
+	return res.json(await LocationBudget.find().sort('+min'));
+});
 app.get(
 	'/api/categories',
 	(req, res) => {
@@ -247,6 +251,13 @@ async function connectDbAndListen() {
 			useUnifiedTopology: true,
 		});
 		console.log(`Database connected on ${host}:${port}`);
+
+		if ((await LocationBudget.countDocuments()) < 1) {
+			LocationBudget.create({ min: 0, max: 5000, label: 'Free - 5k' });
+			LocationBudget.create({ min: 5000, max: 10000, label: '5k - 10k' });
+			LocationBudget.create({ min: 10000, max: 20000, label: '10k - 20k' });
+			LocationBudget.create({ min: 20000, max: undefined, label: '20k+' });
+		}
 	} catch (error) {
 		console.log(error.message);
 	}
