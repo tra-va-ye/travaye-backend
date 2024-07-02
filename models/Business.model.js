@@ -31,14 +31,6 @@ const businessSchema = new mongoose.Schema(
 			type: String,
 			// required: true,
 		},
-		businessPriceRangeFrom: {
-			type: Number,
-			// required: true,
-		},
-		businessPriceRangeTo: {
-			type: Number,
-			// required: true,
-		},
 		businessEmail: {
 			type: String,
 			required: true,
@@ -47,14 +39,17 @@ const businessSchema = new mongoose.Schema(
 		password: {
 			type: String,
 			required: true,
+			select: false,
 		},
 		verificationCode: {
 			type: Number,
 			required: true,
+			select: false,
 		},
 		emailVerified: {
 			type: Boolean,
 			default: false,
+			select: false,
 		},
 		businessVerified: {
 			type: String,
@@ -72,10 +67,12 @@ const businessSchema = new mongoose.Schema(
 		businessCacProofImageURL: {
 			type: Array,
 			default: [],
+			select: false,
 		},
 		businessProofAddressImageURL: {
 			type: Array,
 			default: [],
+			select: false,
 		},
 		businessLocationImages: {
 			type: Array,
@@ -83,46 +80,59 @@ const businessSchema = new mongoose.Schema(
 		},
 		businessCardAuthorizationCode: {
 			type: String,
+			select: false,
 		},
 		businessCardBin: {
 			type: String,
+			select: false,
 		},
 		businessCardLast4Digit: {
 			type: String,
+			select: false,
 		},
 		businessCardExpiryMonth: {
 			type: String,
+			select: false,
 		},
 		businessCardExpiryYear: {
 			type: String,
+			select: false,
 		},
 		businessCardChannel: {
 			type: String,
+			select: false,
 		},
 		businessCardType: {
 			type: String,
+			select: false,
 		},
 		businessCardBank: {
 			type: String,
+			select: false,
 		},
 		businessCardCountryCode: {
 			type: String,
+			select: false,
 		},
 		businessCardBrand: {
 			type: String,
+			select: false,
 		},
 		businessCardReusable: {
 			type: Boolean,
+			select: false,
 		},
 		businessCardSignature: {
 			type: String,
+			select: false,
 		},
 		addedCard: {
 			type: Boolean,
 			default: false,
+			select: false,
 		},
 		description: {
-			type: String
+			type: String,
 		},
 		likes: {
 			type: [Schema.Types.ObjectId],
@@ -131,7 +141,7 @@ const businessSchema = new mongoose.Schema(
 		},
 		reviews: {
 			type: [Schema.Types.ObjectId],
-			ref: 'BusinessReview'
+			ref: 'BusinessReview',
 		},
 		profilePhoto: String,
 	},

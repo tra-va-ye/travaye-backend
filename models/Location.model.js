@@ -3,6 +3,7 @@
 
 // Necessary Imports
 import mongoose, { Schema } from 'mongoose';
+import paginate from 'mongoose-paginate-v2';
 
 // Location Schema Structure
 const locationSchema = new mongoose.Schema(
@@ -42,7 +43,7 @@ const locationSchema = new mongoose.Schema(
 		},
 		locationDescription: {
 			type: String,
-			required: true,
+			// required: true,
 		},
 		locationImagePath: {
 			type: Array,
@@ -72,11 +73,17 @@ const locationSchema = new mongoose.Schema(
 		minPrice: {
 			type: Number,
 		},
+		business: {
+			type: Schema.Types.ObjectId,
+			ref: 'Business',
+		},
 	},
 	{
 		timestamps: true,
 	}
 );
+
+locationSchema.plugin(paginate);
 
 // Exporting Model
 export const Location = mongoose.model('Location', locationSchema);

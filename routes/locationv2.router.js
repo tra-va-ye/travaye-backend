@@ -13,6 +13,7 @@ import {
 } from '../controllers/locationv2.controller.js';
 import passport from 'passport';
 import { upload } from '../config/multer.js';
+import { Location } from '../models/Location.model.js';
 
 const router = Router();
 
@@ -24,12 +25,9 @@ export const exclusions = [
 
 router.get('/', async (req, res) => {
 	try {
-		const query = Business.find({}).select([
-			...cardFieldsProjection,
-			...excludeBusinessFieldsProjection,
-			...excludedFieldsProjection,
-		]).populate('reviews');
-		const businesses = await Business.paginate(query, {
+		const query = Location.find({}).populate('business').populate('budgetClass');
+
+		const businesses = await Location.paginate(query, {
 			customLabels: {
 				docs: 'data',
 				meta: 'meta',
@@ -38,6 +36,7 @@ router.get('/', async (req, res) => {
 
 		return res.json(businesses);
 	} catch (error) {
+		console.error(error);
 		return res.status(500).json({ error: error.message });
 	}
 });
@@ -45,11 +44,13 @@ router.get('/plan', planTrip);
 
 router.get('/:id', async (req, res) => {
 	try {
-		const business = await Business.findById(req.params.id)
-			.select(exclusions)
-			.populate('reviews');
+		const business = await Location.findById(req.params.id).populate(
+			'business'
+		);
+		// .select(exclusions)
+		// .populate('reviews');
 
-		return res.json(business);
+		return res.json(business.business);
 	} catch (error) {
 		return res.status(500).json({ error: error.message });
 	}
