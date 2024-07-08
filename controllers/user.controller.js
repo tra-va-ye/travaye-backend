@@ -73,7 +73,7 @@ export const loginUser = async (req, res, next) => {
 	const password = req.body.password;
 
 	try {
-		const user = await User.findOne({ username: username });
+		const user = await User.findOne({ username: username }).select(['username', 'email', 'password', 'emailVerified']);
 
 		if (!user) {
 			return res.status(400).json({
@@ -110,7 +110,7 @@ export const logUserOut = (req, res) => {
 export const verifyUser = async (req, res) => {
 	const verificationCode = req.body?.code;
 
-	const user = req.user;
+	const user = await User.findById(req.user._id).select([]);
 	const isMatch = +verificationCode === user.verificationCode;
 	if (!isMatch) {
 		return res.status(400).json({ error: 'Invalid Code' });

@@ -211,7 +211,7 @@ export const planTrip = async (req, res) => {
 		}
 
 		if (budget) {
-			query.and({ budgetClass: budget });
+			query.and([{ budgetClass: budget }]);
 		}
 
 		const locations = await query

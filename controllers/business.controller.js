@@ -156,7 +156,7 @@ export const logBusinessOut = (req, res) => {
 export const verifyBusiness = async (req, res) => {
 	const verificationCode = req.body?.code;
 
-	const user = req.user;
+	const user = await Business.findById(req.user._id).select(['businessEmail','password', 'emailVerified', 'businessVerified', 'verificationCode']);
 	const isMatch = +verificationCode === user.verificationCode;
 	if (!isMatch) {
 		return res.status(400).json({ error: 'Invalid Code' });

@@ -26,9 +26,11 @@ const userSchema = new mongoose.Schema(
     password: {
       type: String,
       required: true,
+      select: false
     },
     verificationCode: {
       type: Number,
+      select: false
     },
     emailVerified: {
       type: Boolean,
