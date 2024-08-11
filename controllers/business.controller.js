@@ -14,6 +14,7 @@ import { Location } from '../models/Location.model.js';
 import { sendEmail } from '../services/mail/mail.service.js';
 import { dirname } from '../lib/index.js';
 import { render } from 'pug';
+import LocationBudget from '../models/LocationBudget.js';
 
 const saveImagesWithModifiedName = async (files) => {
 	const imageUrls = [];
@@ -182,8 +183,6 @@ export const completeBusinessRegistration = async (req, res) => {
 			businessLGA,
 			businessCity,
 			businessState,
-			businessPriceRangeFrom,
-			businessPriceRangeTo,
 			businessSubCategory,
 			businessBudget,
 			businessDescription,
@@ -215,12 +214,14 @@ export const completeBusinessRegistration = async (req, res) => {
 		business.businessLGA = businessLGA;
 		business.businessCity = businessCity;
 		business.businessState = businessState;
-		business.budgetClass = businessBudget;
+		// business.budgetClass = businessBudget;
 		// business.businessPriceRangeFrom = businessPriceRangeFrom;
 		// business.businessPriceRangeTo = businessPriceRangeTo;
 		business.businessVerified = 'pending';
 
 		const pendingVerification = await business.save();
+
+		const budgetClass = await LocationBudget.find({ label: businessBudget });
 
 		const location = new Location({
 			locationName: businessName,
@@ -235,7 +236,7 @@ export const completeBusinessRegistration = async (req, res) => {
 			locationCategory: businessCategory,
 			locationAddedBy: req.user.email,
 			locationSubCategory: businessSubCategory,
-			budgetClass: businessBudget,
+			budgetClass: budgetClass._id,
 			business: business._id,
 		});
 
