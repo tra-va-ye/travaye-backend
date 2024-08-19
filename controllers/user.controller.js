@@ -157,6 +157,28 @@ export const updateProfilePhoto = async (req, res) => {
 	return res.status(400).json({ message: 'Invalid file type.' });
 };
 
+export const updateUserProfile = async (req, res) => {
+	const { fullName, username, occupation, aboutUser } = req.body;
+	
+	const user = await User.findById(req.user._id);
+
+	if (!user) return res.json({ message: "User not found" });
+
+	if (username) user.username = username;
+	if (fullName) user.fullName = fullName;
+	if (occupation) user.occupation = occupation;
+	if (aboutUser) user.aboutUser = aboutUser;
+
+	await user.save();
+
+	// console.log(user);
+
+	return res.json({ message: "Profile updated", updatedUser: await user.populate({
+		path: 'likedLocations',
+		select: [...exclusions],
+	}) });
+};
+
 export const resendVerification = async (req, res, next) => {
 	if (!req.user) {
 		return res.status(401).json({ message: 'Unauthorized' });

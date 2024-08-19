@@ -43,6 +43,7 @@ const userSchema = new mongoose.Schema(
     },
     profilePhoto: String,
     occupation: String,
+    aboutUser: String,
   },
   {
     timestamps: true,

@@ -10,6 +10,7 @@ import {
 	resendVerification,
 	forgotPassword,
 	resetPassword,
+	updateUserProfile,
 } from '../controllers/user.controller.js';
 import { upload } from '../config/multer.js';
 import { validateBody } from '../middleware/validations.js';
@@ -65,7 +66,15 @@ userRouter
 		updateProfilePhoto
 	);
 
+userRouter
+	.put(
+		'/edit-profile',
+		passport.authenticate('jwt', {session: false}), 
+		updateUserProfile	
+	);
+
 userRouter.post('/forgot-password', forgotPassword);
+
 userRouter.post(
 	'/reset-password',
 	validateBody(
