@@ -1,4 +1,5 @@
 import { Business } from '../models/Business.model.js';
+import { Location } from '../models/Location.model.js';
 import BusinessReview from '../models/BusinessReview.js';
 import { User } from '../models/User.model.js';
 import { saveImagesWithModifiedName } from './location.controllers.js';
@@ -85,11 +86,14 @@ export const reviewLocation = async (req, res) => {
 		// 	throw new Error('No files uploaded!');
 		// }
 		const images = req.files;
-		const location = await Business.findById(locationID);
+		const locationLoc = await Location.findById(locationID);
+		let locationBusiness = await Business.findById(locationID);
 		const reviewer = await User.findById(reviewerID);
 
-		if (!location) {
+		if (!locationBusiness && !locationLoc) {
 			return res.status(404).json({ error: 'Location not found' });
+		} else if (!locationBusiness && locationLoc) {
+			locationBusiness = await Business.findById(locationLoc.business);
 		}
 
 		const newReview = {
@@ -98,19 +102,17 @@ export const reviewLocation = async (req, res) => {
 			reviewerID,
 			reviewerFullname: reviewer?.fullName,
 			reviewImagePaths: await saveImagesWithModifiedName(images ?? []),
-			reviewing: location.id,
+			reviewing: locationBusiness._id,
 		};
-
+		
 		const review = await BusinessReview.create(newReview);
-
-		location.reviews.push(review);
-
-		const updatedLocation = await location.save();
+		locationBusiness.reviews.push(review);
+		await locationBusiness.save();
 
 		return res.status(201).json(review);
 	} catch (error) {
 		console.error(error);
-		return res.status(500).json({ error: 'Internal Server Error' });
+		return res.status(500).json({ error: 'Internal Server Error', message: error });
 	}
 };
 

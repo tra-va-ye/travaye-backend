@@ -9,6 +9,7 @@ import { dirname } from '../lib/index.js';
 import { readFileSync } from 'fs';
 import Cache from '../lib/cache.js';
 import { exclusions } from '../routes/locationv2.router.js';
+import { Business } from '../models/Business.model.js';
 
 export const registerUser = async (req, res, next) => {
 	const username = req.body?.username;
@@ -157,6 +158,28 @@ export const updateProfilePhoto = async (req, res) => {
 	return res.status(400).json({ message: 'Invalid file type.' });
 };
 
+export const updateUserProfile = async (req, res) => {
+	const { fullName, username, occupation, aboutUser } = req.body;
+	
+	const user = await User.findById(req.user._id);
+
+	if (!user) return res.json({ message: "User not found" });
+
+	if (username) user.username = username;
+	if (fullName) user.fullName = fullName;
+	if (occupation) user.occupation = occupation;
+	if (aboutUser) user.aboutUser = aboutUser;
+
+	await user.save();
+
+	// console.log(user);
+
+	return res.json({ message: "Profile updated", updatedUser: await user.populate({
+		path: 'likedLocations',
+		select: [...exclusions],
+	}) });
+};
+
 export const resendVerification = async (req, res, next) => {
 	if (!req.user) {
 		return res.status(401).json({ message: 'Unauthorized' });
@@ -176,34 +199,50 @@ export const forgotPassword = async (req, res) => {
 	const { email } = req.body;
 
 	const user = await User.findOne({ email }); //.or([{ username: email }]).exec();
+	const business = await Business.findOne({ businessEmail: email });
 
-	if (!user) {
-		return res.status(400).json({ message: 'Bad Request' });
+	if (!user && !business) {
+		return res.status(400).json({ message: 'User Not Found' });
 	}
 
-	const token = jwt.sign(
-		{
-			id: user.id,
-			action: 'reset-password',
-		},
-		process.env.JWT_SECRET,
-		{
-			expiresIn: '1d',
-		}
-	);
+	let token; 
+	if (business && !user) {
+		token = jwt.sign(
+			{
+				id: business.id,
+				action: 'reset-password',
+			},
+			process.env.JWT_SECRET,
+			{
+				expiresIn: '1d',
+			}
+		);
+	} else if (user && !business) {
+		token = jwt.sign(
+			{
+				id: user.id,
+				action: 'reset-password',
+			},
+			process.env.JWT_SECRET,
+			{
+				expiresIn: '1d',
+			}
+		);
+
+	}
 
 	// client.setex(`forgot-password:${user.id}`, 60 * 60 * 24, token);
 
 	let hostname = (process.env.NODE_ENV == 'production'
 		? 'travaye.ng'
 		: 'travaye-frontend-git-staging-tra-va-yes-projects.vercel.app/');
-	const url = `https://${hostname}/reset-password?token=${token}&email=${user.email}`;
+	const url = `https://${hostname}/reset-password?token=${token}&email=${email}`;
 	const message = `Click the link to reset your password <a href='${url}'>link</a>`;
 
-	sendEmail(user.email, message, 'Password Reset').catch((err) => {
+	sendEmail(email, message, 'Password Reset').catch((err) => {
 		console.error(err);
 	});
-	return res.json({
+	return res.status(200).json({
 		ok: true,
 	});
 };
@@ -216,20 +255,31 @@ export const resetPassword = async (req, res) => {
 			complete: false,
 		});
 		const user = await User.findById(payload.id);
+		const business = await Business.findById(payload.id);
 
-		if (!user) {
+		if (!user && !business) {
 			return res.status(400).json({
-				message: 'Bad request',
+				message: 'User Not Found',
 				error: 'Bad request',
 			});
 		}
 
-		user.password = bcrypt.hashSync(password, bcrypt.genSaltSync(13));
-		await user.save();
+		if (user && !business) {
+			user.password = bcrypt.hashSync(password, bcrypt.genSaltSync(13));
+			await user.save();
+	
+			return res.status(200).json({
+				ok: true,
+			});
+		} else if (business && !user) {
+			business.password = bcrypt.hashSync(password, bcrypt.genSaltSync(13));
+			await business.save();
+	
+			return res.status(200).json({
+				ok: true,
+			});
+		}
 
-		return res.status(200).json({
-			ok: true,
-		});
 	} catch (err) {
 		return res.status(500).json({ error: err.message });
 	}

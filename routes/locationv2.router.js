@@ -44,11 +44,26 @@ router.get('/plan', planTrip);
 
 router.get('/:id', async (req, res) => {
 	try {
-		const business = await Location.findById(req.params.id).populate(
-			'business'
-		);
+		const business = await Location.findById(req.params.id)
+		.populate([
+			{
+				path: 'business',
+				populate: {
+					path: 'likes'
+				}
+			},
+			{
+				path: 'business',
+				populate: {
+					path: 'reviews',
+					populate: {
+						path: 'reviewerID',
+						model: 'User'
+					}
+				}
+			},
+		])
 		// .select(exclusions)
-		// .populate('reviews');
 
 		return res.json(business.business);
 	} catch (error) {
