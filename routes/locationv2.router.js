@@ -7,6 +7,7 @@ import {
 } from '../models/Business.model.js';
 import { planTrip } from '../controllers/location.controllers.js';
 import {
+	deleteReviewLocation,
 	likeLocation,
 	reviewLocation,
 	unlikeLocation,
@@ -86,6 +87,10 @@ router.post(
 	passport.authenticate(['jwt'], { session: false }),
 	upload.array('pictures'),
 	reviewLocation
+).delete(
+	'/review',
+	passport.authenticate(['jwt'], { session: false }),
+	deleteReviewLocation
 );
 
 export default router;

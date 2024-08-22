@@ -159,25 +159,39 @@ export const updateProfilePhoto = async (req, res) => {
 };
 
 export const updateUserProfile = async (req, res) => {
-	const { fullName, username, occupation, aboutUser } = req.body;
-	
-	const user = await User.findById(req.user._id);
+	try {
+		const { fullName, username, occupation, aboutUser, password } = req.body;
+		
+		const user = await User.findById(req.user._id);
 
-	if (!user) return res.json({ message: "User not found" });
+		if (!user) return res.status(404).json({ message: "User not found" });
+		const salt = await bcrypt.genSalt(13);
 
-	if (username) user.username = username;
-	if (fullName) user.fullName = fullName;
-	if (occupation) user.occupation = occupation;
-	if (aboutUser) user.aboutUser = aboutUser;
+		if (username) user.username = username;
+		if (fullName) user.fullName = fullName;
+		if (occupation) user.occupation = occupation;
+		if (aboutUser) user.aboutUser = aboutUser;
+		
+		if (password) {
+			const check = await bcrypt.compare(password, user.password);
+			if (check) return res.status(400).json({
+				error: "You can't change to the same password",
+			});
+			user.password = await bcrypt.hash(password, salt);
+		}
 
-	await user.save();
-
-	// console.log(user);
-
-	return res.json({ message: "Profile updated", updatedUser: await user.populate({
-		path: 'likedLocations',
-		select: [...exclusions],
-	}) });
+		await user.save();
+		
+		return res.status(200).json({
+			message: "Profile updated",
+			updatedUser: await User.findById(user._id).populate({
+				path: 'likedLocations',
+				select: [...exclusions]
+			})
+		});
+	} catch(err) {
+		return res.status(500).json({ error: err.message });
+	} 
 };
 
 export const resendVerification = async (req, res, next) => {
