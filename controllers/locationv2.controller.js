@@ -1,6 +1,6 @@
 import { Business } from '../models/Business.model.js';
 import { Location } from '../models/Location.model.js';
-import BusinessReview from '../models/BusinessReview.js';
+import { BusinessReview } from '../models/BusinessReview.js';
 import { User } from '../models/User.model.js';
 import { saveImagesWithModifiedName } from './location.controllers.js';
 
@@ -79,12 +79,8 @@ export const likeLocation = async (req, res) => {
  */
 export const reviewLocation = async (req, res) => {
 	try {
-		const { locationID, reviewerID, reviewRating, reviewDescription } =
-			req.body;
+		const { locationID, reviewerID, reviewRating, reviewDescription } = req.body;
 
-		// if (!files || files.length === 0) {
-		// 	throw new Error('No files uploaded!');
-		// }
 		const images = req.files;
 		const locationLoc = await Location.findById(locationID);
 		let locationBusiness = await Business.findById(locationID);
@@ -96,20 +92,51 @@ export const reviewLocation = async (req, res) => {
 			locationBusiness = await Business.findById(locationLoc.business);
 		}
 
-		const newReview = {
+		const newReview = await BusinessReview.create({
 			reviewRating,
 			reviewDescription,
 			reviewerID,
 			reviewerFullname: reviewer?.fullName,
 			reviewImagePaths: await saveImagesWithModifiedName(images ?? []),
-			reviewing: locationBusiness._id,
-		};
-		
-		const review = await BusinessReview.create(newReview);
-		locationBusiness.reviews.push(review);
+			reviewing: locationBusiness._id
+		});
+
+		locationBusiness.reviews.push(newReview);
 		await locationBusiness.save();
 
-		return res.status(201).json(review);
+		return res.status(201).json({ newReview });
+	} catch (error) {
+		console.error(error);
+		return res.status(500).json({ error: 'Internal Server Error', message: error });
+	}
+};
+
+export const deleteReviewLocation = async (req, res) => {
+	try {
+		const { reviewID } = req.body;
+		
+		const review = await BusinessReview.findById(reviewID);
+
+		if (!review) {
+			return res.status(404).json({ error: "This review doesn't exist" });
+		}
+		if (review.reviewerID._id.toString() !== req.user.id.toString()) {
+			return res.status(403).json({ error: "You don't have permission to delete this review" });
+		}
+		
+		const locationLoc = await Location.findById(review.reviewing);
+		let locationBusiness = await Business.findById(review.reviewing);
+
+		if (!locationBusiness && !locationLoc) {
+			return res.status(404).json({ error: 'Location not found' });
+		} else if (!locationBusiness && locationLoc) {
+			locationBusiness = await Business.findById(locationLoc.business);
+		}
+
+		await locationBusiness.reviews.filter((rev) => rev != reviewID);
+		locationBusiness.save();
+
+		return res.status(200).json({ message: "Review deleted" });
 	} catch (error) {
 		console.error(error);
 		return res.status(500).json({ error: 'Internal Server Error', message: error });
@@ -123,8 +150,6 @@ export const unlikeLocation = async (req, res) => {
 	try {
 		const user = req.user;
 		const locationID = req.body?.locationName;
-
-		console.log(locationID);
 
 		// Filter the location out from the liked locations list
 		user.likedLocations =

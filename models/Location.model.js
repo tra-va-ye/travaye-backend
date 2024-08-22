@@ -39,7 +39,8 @@ const locationSchema = new mongoose.Schema(
 		},
 		locationRating: {
 			type: Number,
-			// required: true,
+			required: true,
+			default: 3
 		},
 		locationDescription: {
 			type: String,
