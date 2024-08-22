@@ -171,12 +171,14 @@ export const updateUserProfile = async (req, res) => {
 		if (fullName) user.fullName = fullName;
 		if (occupation) user.occupation = occupation;
 		if (aboutUser) user.aboutUser = aboutUser;
-		if (password) user.password = await bcrypt.hash(password, salt);
-
-		const check = await bcrypt.compare(password, user.password);
-		if (check) return res.status(400).json({
-			error: "You can't change to the same password",
-		});
+		
+		if (password) {
+			const check = await bcrypt.compare(password, user.password);
+			if (check) return res.status(400).json({
+				error: "You can't change to the same password",
+			});
+			user.password = await bcrypt.hash(password, salt);
+		}
 
 		await user.save();
 		
@@ -185,7 +187,7 @@ export const updateUserProfile = async (req, res) => {
 			updatedUser: await User.findById(user._id).populate({
 				path: 'likedLocations',
 				select: [...exclusions]
-			}) 
+			})
 		});
 	} catch(err) {
 		return res.status(500).json({ error: err.message });
