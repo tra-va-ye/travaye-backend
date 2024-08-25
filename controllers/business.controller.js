@@ -15,6 +15,7 @@ import { sendEmail } from '../services/mail/mail.service.js';
 import { dirname } from '../lib/index.js';
 import { render } from 'pug';
 import LocationBudget from '../models/LocationBudget.js';
+import { transformBusinessToLocation } from './locationv2.controller.js';
 
 const saveImagesWithModifiedName = async (files) => {
 	const imageUrls = [];
@@ -146,7 +147,7 @@ export const currentUser = async (req, res) => {
 	const business = await Business.findById(req.user.id, [
 		...cardFieldsProjection,
 		...excludedFieldsProjection,
-	]).populate('reviews');
+	]).populate('reviews').populate('budgetClass');
 	return res.status(200).json({ user: business });
 };
 // Logout
@@ -154,6 +155,7 @@ export const logBusinessOut = (req, res) => {
 	req.logOut();
 	res.redirect('/login');
 };
+
 export const verifyBusiness = async (req, res) => {
 	const verificationCode = req.body?.code;
 
@@ -214,9 +216,6 @@ export const completeBusinessRegistration = async (req, res) => {
 		business.businessLGA = businessLGA;
 		business.businessCity = businessCity;
 		business.businessState = businessState;
-		// business.budgetClass = businessBudget;
-		// business.businessPriceRangeFrom = businessPriceRangeFrom;
-		// business.businessPriceRangeTo = businessPriceRangeTo;
 		business.businessVerified = 'pending';
 
 		const pendingVerification = await business.save();
@@ -245,8 +244,74 @@ export const completeBusinessRegistration = async (req, res) => {
 		return res.status(200).json({ pendingVerification });
 	} catch (error) {
 		return res.status(400).json({
-			error: 'Failed to update business details',
+			error: 'Failed to complete business registration',
 			message: error.message,
 		});
 	}
 };
+
+export const updateBusinessSettings = async (req, res) => {
+	try {
+		const {
+			businessName,
+			businessCategory,
+			businessAddress,
+			businessLGA,
+			businessState,
+			businessCity,
+			description,
+			businessSubCategory,
+			password
+		} = req.body;
+
+		const budgetClass = await LocationBudget.findOne({ label: req.body.budgetClass });
+
+		// const business = Business.findById(req.user._id);
+		const business = req.user;
+		
+		if (!business) return res.status(400).json({
+			error: "Business not found"
+		});
+
+		if (businessName) business.businessName = businessName;
+		if (businessCategory) business.businessCategory = businessCategory
+		.toLowerCase()
+		.replace(/\s+/g, '-');
+		if (businessSubCategory) business.businessSubCategory = businessSubCategory;
+		if (businessAddress) business.businessAddress = businessAddress;
+		if (businessState) business.businessState = businessState
+		if (businessLGA) business.businessLGA = businessLGA;
+		if (businessCity) business.businessCity = businessCity;
+		if (description) business.description = description;
+		
+		if (budgetClass) business.budgetClass = budgetClass._id;
+		if (!budgetClass) return res.status(404).json({
+			error: "Can't find budget type"
+		});
+
+		const salt = await bcrypt.genSalt(13);
+		if (password) {
+			const check = await bcrypt.compare(password, user.password);
+			if (check) return res.status(400).json({
+				error: "You can't change to the same password",
+			});
+			business.password = await bcrypt.hash(password, salt);
+		}
+
+		const newBusiness = await business.save();
+		
+		const location = await Location.findOne({ business: business._id });
+
+		await Location.findByIdAndUpdate(location._id, transformBusinessToLocation(business), { new: true }).populate("budgetClass");
+
+		return res.status(200).json({
+			business: newBusiness,
+			message: "Business Settings Updated Successfully"
+		})
+	} catch(err) {
+		return res.status(400).json({
+			error: 'Failed to update business details',
+			message: err.message,
+		});
+	}
+}
