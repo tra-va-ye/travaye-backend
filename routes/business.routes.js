@@ -8,6 +8,7 @@ import {
 	currentUser,
 	loginBusiness,
 	registerBusiness,
+	updateBusinessSettings,
 	verifyBusiness,
 } from '../controllers/business.controller.js';
 const businessRouter = express.Router();
@@ -82,4 +83,11 @@ businessRouter.route('/complete').post(
 	),
 	completeBusinessRegistration
 );
+
+businessRouter.route('/edit-profile').put(
+	passport.authenticate('business', { session: false }),
+	updateBusinessSettings
+);
+
+
 export default businessRouter;

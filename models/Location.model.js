@@ -71,9 +71,6 @@ const locationSchema = new mongoose.Schema(
 			type: Schema.Types.ObjectId,
 			ref: 'Budget',
 		},
-		minPrice: {
-			type: Number,
-		},
 		business: {
 			type: Schema.Types.ObjectId,
 			ref: 'Business',
