@@ -143,11 +143,19 @@ const businessSchema = new mongoose.Schema(
 			type: [Schema.Types.ObjectId],
 			ref: 'BusinessReview',
 		},
+		rating: {
+			type: Number,
+			default: 3
+		},
 		profilePhoto: String,
 		budgetClass: {
 			type: Schema.Types.ObjectId,
 			ref: 'Budget',
 		},
+		numberOfProfileVisits: {
+			type: Number,
+			default: 0
+		}
 	},
 	{
 		timestamps: true,

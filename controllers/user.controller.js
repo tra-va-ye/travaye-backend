@@ -127,10 +127,15 @@ export const verifyUser = async (req, res) => {
 };
 
 export const getUser = async (req, res) => {
-	const user = await User.findById(req.user.id, '-password -verificationCode').populate({
-		path: 'likedLocations',
-		select: [...exclusions],
-	});
+	const user = await User.findById(req.user.id, '-password -verificationCode').populate([
+		{
+			path: 'likedLocations',
+			select: [...exclusions],
+			populate: {
+				path: 'business'
+			}
+		}
+	]);
 	// user.password = undefined;
 	// user.verificationCode = undefined;
 	return res.status(200).json({ user });

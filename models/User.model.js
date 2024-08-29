@@ -39,7 +39,7 @@ const userSchema = new mongoose.Schema(
     likedLocations: {
       type: [Schema.Types.ObjectId],
       default: [],
-      ref: 'Business'
+      ref: 'Location'
     },
     profilePhoto: String,
     occupation: String,
