@@ -187,7 +187,7 @@ export const completeBusinessRegistration = async (req, res) => {
 			businessState,
 			businessSubCategory,
 			businessBudget,
-			businessDescription,
+			businessAbout,
 		} = req?.body;
 
 		const businessLocationImages = req.files.businessLocationImages || [];
@@ -197,6 +197,7 @@ export const completeBusinessRegistration = async (req, res) => {
 		const business = req.user;
 		business.businessName = businessName;
 		business.businessAddress = businessAddress;
+		business.description = businessAbout;
 		business.businessCategory = businessCategory
 			.toLowerCase()
 			.replace(/\s+/g, '-');
@@ -204,6 +205,7 @@ export const completeBusinessRegistration = async (req, res) => {
 
 		business.businessEmail = businessEmail;
 		business.businessTelephone = businessTelephone;
+		
 		business.businessCacProofImageURL = await saveImagesWithModifiedName(
 			cacRegistrationProof
 		);
@@ -228,9 +230,8 @@ export const completeBusinessRegistration = async (req, res) => {
 			locationCity: businessCity,
 			locationState: businessState,
 			locationLGA: businessLGA,
-			locationLandmark: 'landmark',
-			locationRating: 0,
-			locationDescription: businessDescription,
+			locationRating: business.rating,
+			locationDescription: businessAbout,
 			locationImagePath: business.businessLocationImages,
 			locationCategory: businessCategory,
 			locationAddedBy: req.user.email,
