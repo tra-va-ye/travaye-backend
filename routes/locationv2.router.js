@@ -50,12 +50,6 @@ router.get('/:id', async (req, res) => {
 			{
 				path: 'business',
 				populate: {
-					path: 'likes'
-				}
-			},
-			{
-				path: 'business',
-				populate: {
 					path: 'reviews',
 					populate: {
 						path: 'reviewerID',
@@ -63,10 +57,16 @@ router.get('/:id', async (req, res) => {
 					}
 				}
 			},
+			{
+				path: 'business',
+				populate: {
+					path: 'budgetClass'
+				}
+			}
 		])
 		// .select(exclusions)
 
-		return res.json(business.business);
+		return res.json(business);
 	} catch (error) {
 		return res.status(500).json({ error: error.message });
 	}
