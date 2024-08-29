@@ -37,11 +37,6 @@ const locationSchema = new mongoose.Schema(
 			type: Number,
 			// required: true,
 		},
-		locationRating: {
-			type: Number,
-			required: true,
-			default: 3
-		},
 		locationDescription: {
 			type: String,
 			// required: true,
@@ -58,10 +53,6 @@ const locationSchema = new mongoose.Schema(
 		},
 		locationSubCategory: {
 			type: String,
-		},
-		locationReviews: {
-			type: Array,
-			default: [],
 		},
 		usersThatLiked: {
 			type: Array,
