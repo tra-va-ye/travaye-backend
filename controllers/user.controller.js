@@ -74,7 +74,7 @@ export const loginUser = async (req, res, next) => {
 	const password = req.body.password;
 
 	try {
-		const user = await User.findOne({ username: username }).select(['username', 'email', 'password', 'emailVerified']);
+		const user = await User.findOne({ username: username }).select(['username', 'email', 'password', 'emailVerified', 'role']);
 
 		if (!user) {
 			return res.status(400).json({
