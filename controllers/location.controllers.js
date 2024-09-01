@@ -189,14 +189,21 @@ export const planTrip = async (req, res) => {
 	try {
 		let query = Location.find({
 			// 'business.businessVerified': true
-		});
+		}).populate([
+			{
+				path: 'business',
+				populate: {
+					path: 'budgetClass'
+				}
+			}
+		]);
 
 		if (city.length > 0) {
 			query.and([{ locationCity: { $regex: new RegExp(city, 'i') } }]);
 		}
 
 		if (state.length > 0) {
-			query.and([{ locationState: { $regex: new RegExp(state, 'i') } }]);
+			query.and([{ locationState: { $regex: new RegExp(state, 'i') } }]); 
 		}
 
 		if (lga.length > 0) {
@@ -204,23 +211,29 @@ export const planTrip = async (req, res) => {
 		}
 
 		if (category.length > 0) {
-			query.and([{ locationCategory: category }]);
+			query.and([{ business: { businessCategory: category } }]);
 		}
 		if (subcategory.length > 0) {
-			query.and([{ locationSubCategory: subcategory }]);
+			query.and([{ business: { businessSubCategory: subcategory } }]);
 		}
 
 		if (budget) {
-			query.and([{ budgetClass: budget }]);
+			query.and([{ busine: { budgetClass: budget } }]);
 		}
 
 		const locations = await query
 			.skip((page - 1) * count)
 			.limit(count)
-			.populate('business').populate('budgetClass')
+			.populate([
+				{
+					path: 'business',
+					populate: {
+						path: 'budgetClass'
+					}
+				}
+			])
+			// .populate('budgetClass')
 			.exec();
-
-			console.log(locations);
 
 		const meta = {
 			prev: page > 1 ? page - 1 : null,
@@ -230,7 +243,7 @@ export const planTrip = async (req, res) => {
 			page,
 			count,
 			total: await Business.countDocuments({
-				businessVerified: { $in: ['pending', 'true'] },
+				businessVerified: { $in: ['pending', 'verified'] },
 			}),
 		};
 

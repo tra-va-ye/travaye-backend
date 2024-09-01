@@ -41,9 +41,24 @@ const userSchema = new mongoose.Schema(
       default: [],
       ref: 'Location'
     },
+    // reviews: {
+    //   type: [Schema.Types.ObjectId],
+    //   default: [],
+    //   ref: 'BusinessReview'
+    // },
+    profilesPreviewed: {
+      type: Number,
+      default: 0
+    },
     profilePhoto: String,
     occupation: String,
     aboutUser: String,
+    role: {
+      type: String,
+      enum: ['admin', 'user'],
+      default: 'user',
+      required: true
+    }
   },
   {
     timestamps: true,

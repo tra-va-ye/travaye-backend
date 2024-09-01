@@ -13,6 +13,7 @@ import fs from 'fs';
 import businessRouter from './routes/business.routes.js';
 import locationRouter from './routes/location.routes.js';
 import userRouter from './routes/user.routes.js';
+import adminRouter from './routes/admin.routes.js';
 
 import locationv2 from './routes/locationv2.router.js';
 
@@ -141,6 +142,7 @@ app.use('/api/business', businessRouter);
 app.use('/api/location', locationRouter);
 app.use('/api/locations', locationv2);
 app.use('/api/pay', payRouter);
+app.use('/api/admin', adminRouter);
 app.get('/api/states', (req, res) => {
 	return res.json(JSON.parse(states));
 });
