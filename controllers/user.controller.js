@@ -134,10 +134,11 @@ export const getUser = async (req, res) => {
 			populate: {
 				path: 'business'
 			}
+		},
+		{
+			path: 'reviews'
 		}
 	]);
-	// user.password = undefined;
-	// user.verificationCode = undefined;
 	return res.status(200).json({ user });
 };
 

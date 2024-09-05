@@ -43,10 +43,11 @@ router.get('/', async (req, res) => {
 });
 router.get('/plan', planTrip);
 
-router.get('/:id', async (req, res) => {
+router.get('/:id',
+	passport.authenticate(['jwt'], { session: false }),
+	async (req, res) => {
 	try {
-		const business = await Location.findById(req.params.id)
-		.populate([
+		const business = await Location.findById(req.params.id).populate([
 			{
 				path: 'business',
 				populate: {
@@ -63,8 +64,14 @@ router.get('/:id', async (req, res) => {
 					path: 'budgetClass'
 				}
 			}
-		])
-		// .select(exclusions)
+		]);
+		const user = req.user;
+
+		business.profileVisits ++;
+		await business.save();
+		
+		user.profilesPreviewed ++;
+		await user.save();
 
 		return res.json(business);
 	} catch (error) {

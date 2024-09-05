@@ -26,13 +26,13 @@
         "name": "History & Arts",
         "slug": "history-and-arts",
         "sub": [
-            { "name": "Museum & Art Gallery", "slug": "museum-and-artGallery" },
+            { "name": "Museum & Art Gallery", "slug": "museum-and-art-gallery" },
             { "name": "Unique Building Attractions", "slug": "unique-building-attraction" }
         ]
     },
     {
         "name": "Food & Drinks",
-        "slug": "food-&-drinks",
+        "slug": "food-and-drinks",
         "sub": [
             { "name": "Restaurants & Cafe", "slug": "restaurant-and-cafe" },
             { "name": "Bar & Lounge", "slug": "bar-and-lounge" },
@@ -63,10 +63,7 @@
         "name": "Parks & Relaxation Spots",
         "slug": "parks",
         "sub": [
-            {
-                "name": "Spa",
-                "slug": "spa"
-            },
+            { "name": "Spa", "slug": "spa" },
             { "name": "Beach", "slug": "beach" },
             { "name": "National Parks", "slug": "national-park" },
             { "name": "Amusement Parks", "slug": "amusement-park" }
