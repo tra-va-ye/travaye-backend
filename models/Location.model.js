@@ -29,10 +29,6 @@ const locationSchema = new mongoose.Schema(
 			type: String,
 			required: true,
 		},
-		locationLandmark: {
-			type: String,
-			required: true,
-		},
 		locationContact: {
 			type: Number,
 			// required: true,
@@ -66,6 +62,10 @@ const locationSchema = new mongoose.Schema(
 			type: Schema.Types.ObjectId,
 			ref: 'Business',
 		},
+		profileVisits: {
+			type: Number,
+			default: 0
+		}
 	},
 	{
 		timestamps: true,

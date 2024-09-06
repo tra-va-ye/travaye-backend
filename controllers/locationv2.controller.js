@@ -66,10 +66,6 @@ export const likeLocation = async (req, res) => {
 			await user.save();
 		}
 
-		// Add the location to the liked locations list
-		// if (!user.likedLocations.find((location) => location.id == locationID)) {
-		// }
-
 		return res.status(201).json({ message: "Liked Successfully" });
 	} catch (error) {
 		console.error(error);
@@ -111,18 +107,6 @@ export const unlikeLocation = async (req, res) => {
 		}
 
 	} catch (error) {
-		// laas.sendLog(
-		// 	{
-		// 		level: 'error',
-		// 		text: error.message,
-		// 		context: {
-		// 			user: req.user,
-		// 			action: 'like location',
-		// 			...req.body,
-		// 		},
-		// 	},
-		// 	process.env.DOPPLER_TOKEN
-		// );
 		console.error(error);
 		return res.status(500).json({ error: error.message });
 	}
@@ -134,6 +118,7 @@ export const unlikeLocation = async (req, res) => {
 export const reviewLocation = async (req, res) => {
 	try {
 		const { locationID, reviewerID, reviewRating, reviewDescription } = req.body;
+		const user = req.user;
 
 		const images = req.files;
 		const locationLoc = await Location.findById(locationID);
@@ -155,7 +140,6 @@ export const reviewLocation = async (req, res) => {
 			reviewing: locationBusiness._id
 		});
 
-		
 		locationBusiness.reviews.push(newReview);
 
 		const reviewRatings = await locationBusiness?.reviews?.map(rev => rev?.reviewRating);
@@ -163,7 +147,12 @@ export const reviewLocation = async (req, res) => {
 		locationBusiness.rating = avg;
 		await locationBusiness.save();
 
-		return res.status(201).json({ newReview, revs: locationBusiness.reviews, reviewRatings, avg });
+		const allUserReviews = await BusinessReview.find({ reviewerID: req.user._id });
+
+		user.reviews = allUserReviews;
+		await user.save();
+
+		return res.status(201).json({ newReview });
 	} catch (error) {
 		console.error(error);
 		return res.status(500).json({ error: 'Internal Server Error', message: error });
@@ -173,12 +162,13 @@ export const reviewLocation = async (req, res) => {
 export const deleteReviewLocation = async (req, res) => {
 	try {
 		const { reviewID } = req.body;
-		
+		const user = req.user;
+
 		const review = await BusinessReview.findById(reviewID);
 
 		if (!review) {
 			return res.status(404).json({ error: "This review doesn't exist" });
-		} else if (review.reviewerID._id.toString() !== req.user.id.toString()) {
+		} else if (review.reviewerID._id.toString() !== user.id.toString()) {
 			return res.status(403).json({ error: "You don't have permission to delete this review" });
 		}
 		
@@ -205,6 +195,10 @@ export const deleteReviewLocation = async (req, res) => {
 		}
 		
 		locationBusiness.save();
+		const newUserReviews = await user.reviews.filter(review => review._id === reviewID);
+		console.log(newUserReviews);
+		user.save();
+		
 		return res.status(200).json({ message: "Review deleted" });
 	} catch (error) {
 		console.error(error);

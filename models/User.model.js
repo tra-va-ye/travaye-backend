@@ -41,11 +41,11 @@ const userSchema = new mongoose.Schema(
       default: [],
       ref: 'Location'
     },
-    // reviews: {
-    //   type: [Schema.Types.ObjectId],
-    //   default: [],
-    //   ref: 'BusinessReview'
-    // },
+    reviews: {
+      type: [Schema.Types.ObjectId],
+      default: [],
+      ref: 'BusinessReview'
+    },
     profilesPreviewed: {
       type: Number,
       default: 0

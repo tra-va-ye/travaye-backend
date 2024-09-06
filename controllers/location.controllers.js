@@ -136,6 +136,8 @@ export const getAllLocations = async (req, res) => {
 			};
 		}
 
+		query.business.businessVerified = "verified";
+
 		if (location) {
 			query.locationCity = {
 				$in: location.split(',').map((loc) => new RegExp(loc.trim(), 'i')),
@@ -164,9 +166,9 @@ export const getAllLocations = async (req, res) => {
 };
 
 export const getLocationById = async (req, res) => {
-	const { id } = req.params;
-
 	try {
+		const { id } = req.params;
+		
 		const location = await Location.findById(id).populate('budgetClass');
 		return res.status(200).json(location);
 	} catch (error) {
@@ -242,9 +244,7 @@ export const planTrip = async (req, res) => {
 			to: (page - 1) * count + locations.length,
 			page,
 			count,
-			total: await Business.countDocuments({
-				businessVerified: { $in: ['pending', 'verified'] },
-			}),
+			total: await Business.countDocuments({ businessVerified:  'verified' }),
 		};
 
 		return res.status(200).json({ data: locations, meta });
