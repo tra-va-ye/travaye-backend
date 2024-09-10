@@ -106,8 +106,9 @@ var corsOptions = {
 					} else {
 						callback(new Error('Not allowed by CORS'));
 					}
-			  },
-};
+			},
+	};
+
 app.use(cors(corsOptions));
 app.use(
 	session({
@@ -185,6 +186,7 @@ async function connectDbAndListen() {
 		console.log(`Database connected on ${host}:${port}`);
 
 		if ((await LocationBudget.countDocuments()) < 1) {
+			LocationBudget.create({ min: 0, max: 0, label: 'Free' });
 			LocationBudget.create({ min: 0, max: 5000, label: 'Free - 5k' });
 			LocationBudget.create({ min: 5000, max: 10000, label: '5k - 10k' });
 			LocationBudget.create({ min: 10000, max: 20000, label: '10k - 20k' });

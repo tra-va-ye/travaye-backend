@@ -150,6 +150,25 @@ export const currentUser = async (req, res) => {
 	]).populate('reviews').populate('budgetClass');
 	return res.status(200).json({ user: business });
 };
+
+export const deleteBusinessProfile = async (req, res) => {
+	try {
+		const business = await Business.findById(req.params.userId);
+
+		if (!business) return res.status(404).json({ message: "Business not found" });
+		if (business._id != req.user.id && req.user.role !== "admin") return res.status(401).json({ error: "You can't delete this account" });
+
+		const location = await Location.findOne({ business: req.params.userId });
+
+		await location.remove();
+		await business.remove();
+
+		return res.status(200).json({ message: "Business deleted successfully" });
+	} catch(err) {
+		return res.status(500).json({ error: err.message });
+	} 
+};
+
 // Logout
 export const logBusinessOut = (req, res) => {
 	req.logOut();

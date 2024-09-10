@@ -4,6 +4,7 @@
 // Necessary Imports
 import mongoose, { Schema } from 'mongoose';
 import paginate from 'mongoose-paginate-v2';
+import { Business } from './Business.model.js';
 
 // Location Schema Structure
 const locationSchema = new mongoose.Schema(
@@ -63,6 +64,10 @@ const locationSchema = new mongoose.Schema(
 			ref: 'Business',
 		},
 		profileVisits: {
+			type: Number,
+			default: 0
+		},
+		engagementRate: {
 			type: Number,
 			default: 0
 		}
