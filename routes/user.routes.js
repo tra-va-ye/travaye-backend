@@ -11,6 +11,7 @@ import {
 	forgotPassword,
 	resetPassword,
 	updateUserProfile,
+	deleteUserProfile,
 } from '../controllers/user.controller.js';
 import { upload } from '../config/multer.js';
 import { validateBody } from '../middleware/validations.js';
@@ -49,7 +50,10 @@ userRouter
 				return res.status(201).json({ user, token });
 			}
 		)(req, res, next);
-	}); // http://localhost:8080/api/user/
+	});
+
+userRouter.route('/:userId').delete(passport.authenticate('jwt', { session: false }), deleteUserProfile);
+
 userRouter.route('/login').post(loginUser);
 userRouter
 	.route('/verify')

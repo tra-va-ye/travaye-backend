@@ -41,14 +41,16 @@ const userSchema = new mongoose.Schema(
       default: [],
       ref: 'Location'
     },
+    profilesPreviewed: {
+      type: [Schema.Types.ObjectId],
+      ref: 'Location',
+      required: true,
+      default: []
+    },
     reviews: {
       type: [Schema.Types.ObjectId],
       default: [],
       ref: 'BusinessReview'
-    },
-    profilesPreviewed: {
-      type: Number,
-      default: 0
     },
     profilePhoto: String,
     occupation: String,

@@ -200,6 +200,21 @@ export const updateUserProfile = async (req, res) => {
 	} 
 };
 
+export const deleteUserProfile = async (req, res) => {
+	try {
+		const userToDelete = await User.findById(req.params.userId);
+
+		if (!userToDelete) return res.status(404).json({ message: "User not found" });
+		if (userToDelete._id != req.user.id) return res.status(401).json({ error: "You can't delete this account" });
+
+		await User.findByIdAndDelete(req.params.userId);
+
+		return res.status(200).json({ message: "User deleted successfully" });
+	} catch(err) {
+		return res.status(500).json({ error: err.message });
+	} 
+};
+
 export const resendVerification = async (req, res, next) => {
 	if (!req.user) {
 		return res.status(401).json({ message: 'Unauthorized' });

@@ -153,7 +153,16 @@ const businessSchema = new mongoose.Schema(
 			type: Schema.Types.ObjectId,
 			ref: 'Budget',
 		},
-		numberOfProfileVisits: {
+		profileVisits: {
+			required: true,
+			type: Number,
+			default: 0,
+		},
+		engagementRate: {
+			type: Number,
+			default: 0
+		},
+		conversionRate: {
 			type: Number,
 			default: 0
 		}
@@ -162,6 +171,18 @@ const businessSchema = new mongoose.Schema(
 		timestamps: true,
 	}
 );
+
+businessSchema.pre('save', function(next) {
+	if (this.isModified('profileVisits') || this.isModified('likes') || this.isModified('reviews')) {
+		const calculatedEngagement = ((this.reviews.length + this.likes.length)/ this.profileVisits) * 100;
+		this.engagementRate = calculatedEngagement;
+
+		const calculatedConversion = (this.reviews.length/this.profileVisits) * 100;
+		this.conversionRate = calculatedConversion;
+	}
+	next();
+});
+
 const options = {
 	usernameField: 'businessEmail',
 };
@@ -176,14 +197,6 @@ businessSchema.virtual('likeCount').get(function () {
 businessSchema.methods.toJSON = function () {
 	return { ...this._doc, usersThatLiked: this.likes };
 };
-
-// businessSchema.method.toJSON = function () {
-// 	const userObject = this.toObject();
-
-// 	delete userObject.password;
-
-// 	return userObject;
-// };
 
 // Exporting Model
 export const Business = mongoose.model('Business', businessSchema);

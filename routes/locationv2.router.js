@@ -15,6 +15,7 @@ import {
 import passport from 'passport';
 import { upload } from '../config/multer.js';
 import { Location } from '../models/Location.model.js';
+import { User } from '../models/User.model.js';
 
 const router = Router();
 
@@ -65,13 +66,21 @@ router.get('/:id',
 				}
 			}
 		]);
-		const user = req.user;
+		const user = await User.findById(req.user._id);
 
-		business.profileVisits ++;
-		await business.save();
-		
-		user.profilesPreviewed ++;
-		await user.save();
+		if (!user.profilesPreviewed?.includes(req.params.id)) {
+			const actualBusiness = await Business.findById(business.business._id);
+
+			if (actualBusiness?.profileVisits) {
+				actualBusiness.profileVisits = actualBusiness.profileVisits + 1;
+			} else {
+				actualBusiness.profileVisits = 1;
+			}
+			await actualBusiness.save();
+
+			user.profilesPreviewed?.push(business);
+			await user.save();
+		}
 
 		return res.json(business);
 	} catch (error) {

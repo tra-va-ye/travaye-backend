@@ -6,6 +6,7 @@ import { upload } from '../config/multer.js';
 import {
 	completeBusinessRegistration,
 	currentUser,
+	deleteBusinessProfile,
 	loginBusiness,
 	registerBusiness,
 	updateBusinessSettings,
@@ -49,7 +50,9 @@ businessRouter
 				return res.status(200).json({ business: user, token });
 			})(req, res, next);
 		}
-	); // http://localhost:8080/api/business/
+	);
+
+businessRouter.route('/:userId').delete(passport.authenticate('business', {session: false }), deleteBusinessProfile);
 businessRouter.route('/login').post(loginBusiness);
 
 businessRouter

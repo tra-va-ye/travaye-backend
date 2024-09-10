@@ -14,7 +14,7 @@ export const transformBusinessToLocation = (business) => {
 		locationLGA: business.businessLGA,
 		locationLandmark: '',
 		locationContact: business.businessTelephone,
-		locationRating: 0,
+		locationRating: business.rating,
 		locationDescription: business.description,
 		locationCategory: business.businessCategory,
 		locationSubCategory: business.businessSubCategory,
@@ -53,7 +53,7 @@ export const likeLocation = async (req, res) => {
 		if (location.likes.includes(user._id)) {
 			return res.status(400).json({
 				message: "Location liked already"
-			})
+			});
 		}
 
 		// Check if the location is already in the liked locations list
@@ -93,7 +93,7 @@ export const unlikeLocation = async (req, res) => {
 
 		// Check if the location is already in the liked locations list
 		if (location.likes.includes(user._id)) {
-			location.likes.filter((users) => users != user.id);
+			location.likes = location.likes.filter((users) => users != user.id);
 			await location.save();
 			
 			const newLikedLocs = user.likedLocations.filter((locs) => locs.id != actualLocation._id);
