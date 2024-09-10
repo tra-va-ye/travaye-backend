@@ -4,6 +4,7 @@ import { render } from 'pug';
 import { readFileSync } from 'fs';
 import path from "path";
 import { dirname } from '../lib/index.js';
+import { Location } from "../models/Location.model.js";
 
 export const getAllBusinesses = async (req, res) => {
     try {
@@ -12,11 +13,11 @@ export const getAllBusinesses = async (req, res) => {
         }
         
         if (req.query.status === "pending") {
-            const allBusinesses = await Business.find({ businessVerified: { $in: ["pending", "denied"] } });
+            const allBusinesses = await Business.find({ businessVerified: "pending" });
             
             res.status(200).json(allBusinesses);
         } else {
-            const allBusinesses = await Business.find();
+            const allBusinesses = await Business.find({ businessVerified: { $in: ["verified", "denied"] } });
             
             res.status(200).json(allBusinesses);
         }
@@ -90,3 +91,20 @@ export const acceptOrDenyApproval = async (req, res) => {
 		return res.status(500).json({ message: err.message });
     }
 }
+
+export const deleteBusinessProfile = async (req, res) => {
+	try {
+		const business = await Business.findById(req.params.id);
+
+		if (!business) return res.status(404).json({ message: "Business not found" });
+		if (req.user.role !== "admin") return res.status(401).json({ error: "You can't delete this account" });
+
+		await Location.findOneAndDelete({ business: req.params.id });
+
+		if (business) await Business.findByIdAndDelete(req.params.id);
+
+		return res.status(200).json({ message: "Business deleted successfully" });
+	} catch(err) {
+		return res.status(500).json({ error: err.message });
+	} 
+};
