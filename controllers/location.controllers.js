@@ -94,31 +94,6 @@ export const createLocation = async (req, res) => {
 	}
 };
 
-// export const getAllLocations = async (req, res) => {
-//   let { page, count } = req.query;
-
-//   page = parseInt(page) || 1;
-//   count = parseInt(count) || 10;
-
-//   try {
-//     const locations = await Location.find()
-//       .limit(count)
-//       .skip((page - 1) * count);
-
-//     const meta = {
-//       prev: page > 1 ? page - 1 : null,
-//       next: locations.length < count ? null : page + 1,
-//       from: (page - 1) * count + 1,
-//       to: (page - 1) * count + locations.length,
-//       page,
-//       count,
-//       total: await Location.countDocuments(),
-//     };
-//     return res.status(200).json({ data: locations, meta });
-//   } catch (error) {
-//     return res.status(400).json({ error: error.message });
-//   }
-// };
 export const getAllLocations = async (req, res) => {
 	const { page = 1, count = 10, filters, location } = req.query;
 	try {
@@ -177,77 +152,61 @@ export const getLocationById = async (req, res) => {
 };
 
 export const planTrip = async (req, res) => {
-	const {
-		city,
-		state,
-		lga,
-		category,
-		subcategory,
-		budget,
-		page = 1,
-		count = 10,
-	} = req.query;
-
 	try {
-		let query = Location.find({
-			// 'business.businessVerified': true
-		}).populate([
+		const {
+			city,
+			state,
+			lga,
+			category,
+			subcategory,
+			budget,
+			page = 1,
+			count = 10,
+		} = req.query;
+
+		let query = {};
+
+		if (city) query.locationCity = city;
+
+		if (state) query.locationState = state;
+
+		if (lga) query.locationLGA = lga;
+
+		if (category && category.split(",").length) {
+			query.locationCategory = { $in: [...category.split(",")] };
+		}
+
+		if (subcategory && subcategory.split(",").length) {
+			query.locationSubCategory = { $in: [...subcategory.split(",")] };
+		}
+
+		const locations = await Location.find(query).populate([
 			{
 				path: 'business',
 				populate: {
 					path: 'budgetClass'
 				}
 			}
-		]);
+		]).skip((page - 1) * count).limit(count);
 
-		if (city.length > 0) {
-			query.and([{ locationCity: { $regex: new RegExp(city, 'i') } }]);
-		}
-
-		if (state.length > 0) {
-			query.and([{ locationState: { $regex: new RegExp(state, 'i') } }]); 
-		}
-
-		if (lga.length > 0) {
-			query.and([{ locationLGA: { $regex: new RegExp(lga, 'i') } }]);
-		}
-
-		if (category.length > 0) {
-			query.and([{ business: { businessCategory: category } }]);
-		}
-		if (subcategory.length > 0) {
-			query.and([{ business: { businessSubCategory: subcategory } }]);
-		}
+		let filteredLocations = locations;
 
 		if (budget) {
-			query.and([{ busine: { budgetClass: budget } }]);
+			const filtered = locations.filter(loc => loc.business.budgetClass._id == budget);
+			filteredLocations = filtered;
 		}
-
-		const locations = await query
-			.skip((page - 1) * count)
-			.limit(count)
-			.populate([
-				{
-					path: 'business',
-					populate: {
-						path: 'budgetClass'
-					}
-				}
-			])
-			// .populate('budgetClass')
-			.exec();
 
 		const meta = {
 			prev: page > 1 ? page - 1 : null,
-			next: locations.length < count ? null : page + 1,
+			next: filteredLocations.length < count ? null : page + 1,
 			from: (page - 1) * count + 1,
-			to: (page - 1) * count + locations.length,
+			to: (page - 1) * count + filteredLocations.length,
 			page,
 			count,
-			total: await Business.countDocuments({ businessVerified:  'verified' }),
+			total: await Business.countDocuments({ businessVerified: "verified" })
 		};
 
-		return res.status(200).json({ data: locations, meta });
+		return res.status(200).json({ data: filteredLocations, meta });
 	} catch (err) {
 		console.log(err);
 		return res.status(400).json({ error: err.message });
