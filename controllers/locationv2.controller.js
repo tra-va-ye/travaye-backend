@@ -205,3 +205,34 @@ export const deleteReviewLocation = async (req, res) => {
 		return res.status(500).json({ error: 'Internal Server Error', message: error });
 	}
 };
+
+const checkDifferenceMoreThanSpecificTime = (date1, date2, difference=4) => {
+	const timeDifference = date2.getTime() - date1.getTime();
+
+	const diffInHours = timeDifference / (1000 * 60 * 60);
+	return diffInHours > difference;
+}
+
+export const addVisitToLocationAndUser = async (req, res) => {
+	try {
+		const user = req.user;		
+		const locationID = req.query.location;
+
+		if (user.lastVisit && !checkDifferenceMoreThanSpecificTime(user.lastVisit, new Date(), 2)) return res.status(401).json({ message: "Wait 2 hours to scan again" });
+
+		if (locationID) {
+			const business = await Business.findById(locationID);
+
+			business.userVisits += 1;
+			await business.save();
+		}
+		user.numberOfVisits += 1;
+		user.lastVisit = new Date();
+		await user.save();
+
+		return res.status(201).json({ message: "Visit added successfully" });
+	} catch (error) {
+		console.error(error);
+		return res.status(500).json({ error: 'Internal Server Error', message: error });
+	}
+}

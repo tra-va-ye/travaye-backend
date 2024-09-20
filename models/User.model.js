@@ -47,6 +47,14 @@ const userSchema = new mongoose.Schema(
       required: true,
       default: []
     },
+    numberOfVisits: {
+      type: Number,
+      required: true,
+      default: 0
+    },
+    lastVisit: {
+      type: Date,
+    },
     reviews: {
       type: [Schema.Types.ObjectId],
       default: [],
