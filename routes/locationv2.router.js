@@ -11,6 +11,7 @@ import {
 	likeLocation,
 	reviewLocation,
 	unlikeLocation,
+	addVisitToLocationAndUser
 } from '../controllers/locationv2.controller.js';
 import passport from 'passport';
 import { upload } from '../config/multer.js';
@@ -107,6 +108,11 @@ router.post(
 	'/review',
 	passport.authenticate(['jwt'], { session: false }),
 	deleteReviewLocation
+);
+
+router.put('/visits',
+	passport.authenticate(['jwt'], { session: false }),
+	addVisitToLocationAndUser
 );
 
 export default router;
