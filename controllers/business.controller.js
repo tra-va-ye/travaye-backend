@@ -86,8 +86,6 @@ export const registerBusiness = async (req, res, next) => {
 				);
 				next();
 			}
-
-			// go to the next middleware
 		}
 	);
 };

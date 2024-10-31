@@ -169,7 +169,7 @@ app.use((err, req, res, next) => {
 			context: {
 				stack: err.stack
 			}
-		}, process.env.DOPPLER_TOKEN);s
+		}, process.env.DOPPLER_TOKEN);
 		res.status(500).json({ error: err.message });
 	}
 });
