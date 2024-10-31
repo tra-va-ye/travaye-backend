@@ -49,7 +49,6 @@ const businessSchema = new mongoose.Schema(
 		emailVerified: {
 			type: Boolean,
 			default: false,
-			select: false,
 		},
 		businessVerified: {
 			type: String,

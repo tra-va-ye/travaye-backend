@@ -27,30 +27,7 @@ const userRouter = express.Router();
 userRouter
 	.route('/')
 	.get(passport.authenticate('jwt', { session: false }), getUser)
-	.post(registerUser, (req, res, next) => {
-		passport.authenticate(
-			'jwt',
-			{ session: false },
-			function (err, user, info) {
-				if (err) {
-					return next(err);
-				}
-				if (!user) {
-					// *** Display message without using flash option
-					// re-render the login form with a message
-					return res.status(400).json({
-						error:
-							info.message ?? 'A User with the given username or email exists',
-					});
-				}
-
-				user.password = undefined;
-
-				const token = req.headers.authorization?.split('Bearer ')[1];
-				return res.status(201).json({ user, token });
-			}
-		)(req, res, next);
-	});
+	.post(registerUser);
 
 userRouter.route('/:userId').delete(passport.authenticate('jwt', { session: false }), deleteUserProfile);
 

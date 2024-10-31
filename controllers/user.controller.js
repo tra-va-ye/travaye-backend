@@ -24,49 +24,49 @@ export const registerUser = async (req, res, next) => {
 	// Random Four digit code
 	// Generates a random 4-digit code
 	let verificationCode = Math.floor(Math.random() * 9000) + 1000;
-	User.register(
-		{
+
+	try {
+		const userExists = await User.findOne({ $or: [{email}, {username}] });
+
+		if (userExists) {
+			return res.status(400).json({
+				error: 'A User with the given username or email exists',
+			});
+		}
+
+		const newUser = await User.create({
 			username: username,
 			email: email,
 			fullName: fullName,
 			password: hashedPassword,
 			verificationCode: verificationCode,
 			occupation,
-		},
-		password,
-		async function (err, user) {
-			if (err) {
-				console.log(err);
-				return res.status(400).json({
-					error: 'A User with the given username or email exists',
-				});
-			}
-			const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-				expiresIn: '1d',
-			});
-			req.headers.authorization = `Bearer ${token}`;
+		});
+		
+		const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, {
+			expiresIn: '1d',
+		});
+		req.headers.authorization = `Bearer ${token}`;
 
-			try {
-				const mail = render(
-					readFileSync(
-						path.resolve(
-							dirname(import.meta.url),
-							'../views/email/verification-code.pug'
-						)
-					),
-					{
-						code: verificationCode,
-						filename: 'verification-code',
-					}
-				);
-
-				await sendEmail(email, mail, 'E-mail Verification');
-			} catch (error) {
-				console.error(error);
+		const mail = render(
+			readFileSync(
+				path.resolve(
+					dirname(import.meta.url),
+					'../views/email/verification-code.pug'
+				)
+			),
+			{
+				code: verificationCode,
+				filename: 'verification-code',
 			}
-			return next();
-		}
-	);
+		);
+		await sendEmail(email, mail, 'E-mail Verification');
+
+		return res.status(200).json({ token, user: newUser });
+	} catch(err) {
+		console.error(err);
+		return res.status(500).json({ error: err });
+	}
 };
 
 export const loginUser = async (req, res, next) => {
@@ -109,18 +109,13 @@ export const logUserOut = (req, res) => {
 };
 // Verify
 export const verifyUser = async (req, res) => {
-	const verificationCode = req.body?.code;
+	const verificationCode = req.body.code;
 
-	const user = await User.findById(req.user._id).select([]);
-	const isMatch = +verificationCode === user.verificationCode;
+	const user = await User.findById(req.user._id).select("verificationCode");
+	const isMatch = +verificationCode == user.verificationCode;
 	if (!isMatch) {
 		return res.status(400).json({ error: 'Invalid Code' });
 	}
-	// const verifiedUser = await User.findByIdAndUpdate(
-	//   { _id: _id },
-	//   { verified: true },
-	//   { new: true }
-	// );
 	user.emailVerified = true;
 	await user.save();
 	res.status(200).json({ user });
