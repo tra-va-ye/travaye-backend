@@ -60,9 +60,7 @@ businessRouter
 businessRouter.route('/complete').post(
 	passport.authenticate('business', { session: false }),
 	upload.fields([
-		{ name: 'businessLocationImages', maxCount: 40 },
-		{ name: 'cacRegistrationProof', maxCount: 1 },
-		{ name: 'proofOfAddress', maxCount: 1 },
+		{ name: 'businessLocationImages', maxCount: 10 },
 	]),
 	validateBody(
 		Joi.object({
@@ -75,7 +73,7 @@ businessRouter.route('/complete').post(
 			businessCity: Joi.string().required(),
 			businessState: Joi.string().required(),
 			businessSubCategory: Joi.string().required(),
-			businessDescription: Joi.string().optional(),
+			businessAbout: Joi.string().optional(),
 			businessBudget: Joi.string().required(),
 		}),
 		{

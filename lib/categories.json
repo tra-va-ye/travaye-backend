@@ -1,72 +1,75 @@
 [
-    {
-        "name": "Entertainment Venues",
-        "slug": "entertainment-venue",
-        "sub": [
-            { "name": "Cinema", "slug": "cinema" },
-            { "name": "Arcade", "slug": "arcade" },
-            { "name": "Club", "slug": "club" }
-        ]
-    },
-    {
-        "name": "Special Events",
-        "slug": "special-event",
-        "sub": [
-            { "name": "Festivals & Parades", "slug": "festivals-and-parades" },
-            { "name": "Party", "slug": "party" },
-            { "name": "Exhibition", "slug": "exhibition" }
-        ]
-    },
-    {
-        "name": "Wildlife Attractions",
-        "slug": "wildlife-attraction",
-        "sub": [{ "name": "Zoo", "slug": "zoo" }]
-    },
-    {
-        "name": "History & Arts",
-        "slug": "history-and-arts",
-        "sub": [
-            { "name": "Museum & Art Gallery", "slug": "museum-and-art-gallery" },
-            { "name": "Unique Building Attractions", "slug": "unique-building-attraction" }
-        ]
-    },
-    {
-        "name": "Food & Drinks",
-        "slug": "food-and-drinks",
-        "sub": [
-            { "name": "Restaurants & Cafe", "slug": "restaurant-and-cafe" },
-            { "name": "Bar & Lounge", "slug": "bar-and-lounge" },
-            { "name": "Fast Food Spot", "slug": "fast-food-spot" }
-        ]
-    },
-    {
-        "name": "Sports & Recreation Centres",
-        "slug": "sports-and-recreation",
-        "sub": [
-            { "name": "Stadiums", "slug": "stadium" },
-            { "name": "Sport Events", "slug": "sport-event" },
-            { "name": "Sport Centers", "slug": "sport-center" }
-        ]
-    },
-    {
-        "name": "Historial & Heritage Attractions",
-        "slug": "historical-and-heritage",
-        "sub": [
-            {
-                "name": "Mountains & Caves & Hills & Islands",
-                "slug": "mountain-and-cave-and-hill-island"
-            },
-            { "name": "Waterfalls", "slug": "waterfall" }
-        ]
-    },
-    {
-        "name": "Parks & Relaxation Spots",
-        "slug": "parks",
-        "sub": [
-            { "name": "Spa", "slug": "spa" },
-            { "name": "Beach", "slug": "beach" },
-            { "name": "National Parks", "slug": "national-park" },
-            { "name": "Amusement Parks", "slug": "amusement-park" }
-        ]
-    }
+  {
+    "name": "Entertainment Venues",
+    "slug": "entertainment-venue",
+    "sub": [
+      { "name": "Cinema", "slug": "cinema" },
+      { "name": "Arcade", "slug": "arcade" },
+      { "name": "Club", "slug": "club" }
+    ]
+  },
+  {
+    "name": "Special Events",
+    "slug": "special-event",
+    "sub": [
+      { "name": "Festivals & Parades", "slug": "festivals-and-parades" },
+      { "name": "Party", "slug": "party" },
+      { "name": "Exhibition", "slug": "exhibition" }
+    ]
+  },
+  {
+    "name": "Wildlife Attractions",
+    "slug": "wildlife-attraction",
+    "sub": [{ "name": "Zoo", "slug": "zoo" }]
+  },
+  {
+    "name": "History & Arts",
+    "slug": "history-and-arts",
+    "sub": [
+      { "name": "Museum & Art Gallery", "slug": "museum-and-art-gallery" },
+      {
+        "name": "Unique Building Attractions",
+        "slug": "unique-building-attraction"
+      }
+    ]
+  },
+  {
+    "name": "Food & Drinks",
+    "slug": "food-and-drinks",
+    "sub": [
+      { "name": "Restaurants & Bar", "slug": "restaurant-and-bar" },
+      { "name": "Fast Food Spots", "slug": "fast-food-spot" },
+      { "name": "Cafe and Pastry Shops", "slug": "cafe-and-pastry-shop" }
+    ]
+  },
+  {
+    "name": "Sports & Recreation Centres",
+    "slug": "sports-and-recreation",
+    "sub": [
+      { "name": "Stadium/Courts", "slug": "stadium/court" },
+      { "name": "Sport Centers", "slug": "sport-center" },
+      { "name": "Fitness Centers", "slug": "fitness-center" }
+    ]
+  },
+  {
+    "name": "Historial & Heritage Attractions",
+    "slug": "historical-and-heritage",
+    "sub": [
+      {
+        "name": "Mountains & Caves & Hills & Islands",
+        "slug": "mountain-and-cave-and-hill-island"
+      },
+      { "name": "Waterfalls", "slug": "waterfall" }
+    ]
+  },
+  {
+    "name": "Parks & Relaxation Spots",
+    "slug": "parks",
+    "sub": [
+      {
+        "name": "National Parks/Public Spaces",
+        "slug": "national-park/public-space"
+      }
+    ]
+  }
 ]
