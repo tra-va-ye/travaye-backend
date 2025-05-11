@@ -10,6 +10,11 @@ import paginate from 'mongoose-paginate-v2';
 // User Schema Structure
 const businessSchema = new mongoose.Schema(
   {
+    businessEmail: {
+      type: String,
+      required: true,
+      unique: false,
+    },
     businessName: {
       type: String,
       unique: true,
@@ -29,10 +34,6 @@ const businessSchema = new mongoose.Schema(
     businessState: {
       type: String,
       default: 'Lagos',
-    },
-    businessEmail: {
-      type: String,
-      required: true,
     },
     password: {
       type: String,
@@ -61,6 +62,49 @@ const businessSchema = new mongoose.Schema(
     businessSubCategory: {
       type: String,
     },
+    businessLocationImages: {
+      type: Array,
+      default: [],
+    },
+    description: {
+      type: String,
+    },
+    likes: {
+      type: [Schema.Types.ObjectId],
+      ref: 'User',
+      default: [],
+    },
+    reviews: {
+      type: [Schema.Types.ObjectId],
+      ref: 'BusinessReview',
+    },
+    rating: {
+      type: Number,
+      default: 3,
+    },
+    profilePhoto: String,
+    budgetClass: {
+      type: Schema.Types.ObjectId,
+      ref: 'Budget',
+    },
+    profileVisits: {
+      required: true,
+      type: Number,
+      default: 0,
+    },
+    userVisits: {
+      type: Number,
+      required: true,
+      default: 0,
+    },
+    engagementRate: {
+      type: Number,
+      default: 0,
+    },
+    conversionRate: {
+      type: Number,
+      default: 0,
+    },
     // businessCacProofImageURL: {
     //   type: Array,
     //   default: [],
@@ -71,10 +115,6 @@ const businessSchema = new mongoose.Schema(
     //   default: [],
     //   select: false,
     // },
-    businessLocationImages: {
-      type: Array,
-      default: [],
-    },
     // businessCardAuthorizationCode: {
     //   type: String,
     //   select: false,
@@ -123,50 +163,11 @@ const businessSchema = new mongoose.Schema(
     //   type: String,
     //   select: false,
     // },
-    addedCard: {
-      type: Boolean,
-      default: false,
-      select: false,
-    },
-    description: {
-      type: String,
-    },
-    likes: {
-      type: [Schema.Types.ObjectId],
-      ref: 'User',
-      default: [],
-    },
-    reviews: {
-      type: [Schema.Types.ObjectId],
-      ref: 'BusinessReview',
-    },
-    rating: {
-      type: Number,
-      default: 3,
-    },
-    profilePhoto: String,
-    budgetClass: {
-      type: Schema.Types.ObjectId,
-      ref: 'Budget',
-    },
-    profileVisits: {
-      required: true,
-      type: Number,
-      default: 0,
-    },
-    userVisits: {
-      type: Number,
-      required: true,
-      default: 0,
-    },
-    engagementRate: {
-      type: Number,
-      default: 0,
-    },
-    conversionRate: {
-      type: Number,
-      default: 0,
-    },
+    // addedCard: {
+    //   type: Boolean,
+    //   default: false,
+    //   select: false,
+    // },
   },
   {
     timestamps: true,
