@@ -64,7 +64,26 @@ businessRouter.post(
       address: Joi.string().required(),
     })
   ),
-  registerBusinessAppScript
+  registerBusinessAppScript,
+  (req, res, next) => {
+    passport.authenticate('business', function (err, user, info) {
+      if (err) {
+        return next(err);
+      }
+      if (!user) {
+        // *** Display message without using flash option
+        // re-render the login form with a message
+        res.status(400).json({
+          error: 'No Business Found',
+        });
+      }
+
+      const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+        expiresIn: '1d',
+      });
+      return res.status(200).json({ business: user, token });
+    })(req, res, next);
+  }
 );
 
 businessRouter.route('/login').post(loginBusiness);
