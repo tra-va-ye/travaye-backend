@@ -197,8 +197,9 @@ businessSchema.pre('save', function (next) {
 // })
 
 const options = {
-  usernameField: 'businessEmail',
+  usernameField: 'businessName',
 };
+
 businessSchema.plugin(passportLocalMongoose, options);
 businessSchema.plugin(findOrCreate);
 businessSchema.plugin(paginate);
