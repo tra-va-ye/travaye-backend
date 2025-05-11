@@ -8,6 +8,7 @@ import {
   currentUser,
   loginBusiness,
   registerBusiness,
+  registerBusinessAppScript,
   updateBusinessSettings,
   verifyBusiness,
 } from '../controllers/business.controller.js';
@@ -63,7 +64,7 @@ businessRouter.post(
       address: Joi.string().required(),
     })
   ),
-  registerBusiness
+  registerBusinessAppScript
 );
 
 businessRouter.route('/login').post(loginBusiness);
