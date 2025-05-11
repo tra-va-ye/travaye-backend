@@ -95,26 +95,39 @@ export const registerBusinessAppScript = async (req, res, next) => {
   const hashedPassword = await bcrypt.hash(password, salt);
   let verificationCode = Math.floor(Math.random() * 9000) + 1000;
 
-  Business.register(
-    {
-      businessName: businessName,
-      businessEmail: businessEmail,
-      businessAddress: address,
-      password: hashedPassword,
-      verificationCode: verificationCode,
-      emailVerified: true,
-    },
-    password,
-    function (err, user) {
-      if (!err) {
-        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-          expiresIn: '1d',
-        });
-        req.headers.authorization = `Bearer ${token}`;
-        next();
+  try {
+    Business.register(
+      {
+        businessName: businessName,
+        businessEmail: businessEmail,
+        businessAddress: address,
+        password: hashedPassword,
+        verificationCode: verificationCode,
+        emailVerified: true,
+      },
+      password,
+      function (err, user) {
+        if (err) {
+          res.status(400).json({
+            error: 'A Business with the given username or email exists',
+            message: err,
+          });
+        } else if (!err) {
+          const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+            expiresIn: '1d',
+          });
+          req.headers.authorization = `Bearer ${token}`;
+          next();
+        }
       }
-    }
-  );
+    );
+  } catch (error) {
+    console.log(error);
+    return res.status(400).json({
+      error: 'Failed to register business',
+      message: error,
+    });
+  }
 };
 
 export const loginBusiness = async (req, res, next) => {
