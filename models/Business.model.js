@@ -33,7 +33,6 @@ const businessSchema = new mongoose.Schema(
     businessEmail: {
       type: String,
       required: true,
-      unique: true,
     },
     password: {
       type: String,
@@ -190,6 +189,11 @@ businessSchema.pre('save', function (next) {
   }
   next();
 });
+
+// businessSchema.pre('save', function(next) {
+//     const isMatch = await bcrypt.compare(password, business.password);
+//   next();
+// })
 
 const options = {
   usernameField: 'businessEmail',
