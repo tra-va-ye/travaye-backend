@@ -106,12 +106,7 @@ export const registerBusinessAppScript = async (req, res, next) => {
     },
     password,
     function (err, user) {
-      if (err) {
-        console.log(err);
-        res.status(400).json({
-          error: 'A Business with the given username or email exists',
-        });
-      } else if (!err) {
+      if (!err) {
         const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
           expiresIn: '1d',
         });
