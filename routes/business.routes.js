@@ -5,6 +5,7 @@ import passport from 'passport';
 import { upload } from '../config/multer.js';
 import {
   completeBusinessRegistration,
+  completeBusinessRegistrationAppScript,
   currentUser,
   loginBusiness,
   registerBusiness,
@@ -102,9 +103,6 @@ businessRouter.route('/complete').post(
       businessCategory: Joi.string().required(),
       businessEmail: Joi.string().required(),
       businessTelephone: Joi.string().required(),
-      businessLGA: Joi.string().required(),
-      businessCity: Joi.string().required(),
-      businessState: Joi.string().required(),
       businessSubCategory: Joi.string().required(),
       businessAbout: Joi.string().optional(),
       businessBudget: Joi.string().required(),
@@ -114,6 +112,27 @@ businessRouter.route('/complete').post(
     }
   ),
   completeBusinessRegistration
+);
+
+businessRouter.route('/complete-appscript').post(
+  passport.authenticate('business', { session: false }),
+  validateBody(
+    Joi.object({
+      businessName: Joi.string().required(),
+      businessAddress: Joi.string().required(),
+      businessCategory: Joi.string().required(),
+      businessEmail: Joi.string().required(),
+      businessTelephone: Joi.string().required(),
+      businessSubCategory: Joi.string().required(),
+      businessAbout: Joi.string().optional(),
+      businessBudget: Joi.string().required(),
+      businessLocationImages: Joi.array().items(Joi.string()).required(),
+    }),
+    {
+      allowUnknown: true,
+    }
+  ),
+  completeBusinessRegistrationAppScript
 );
 
 businessRouter
