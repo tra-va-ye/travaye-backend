@@ -4,18 +4,17 @@ import path from 'path';
 import {
   Business,
   cardFieldsProjection,
-  excludeBusinessFieldsProjection,
   excludedFieldsProjection,
 } from '../models/Business.model.js';
 
 import jwt from 'jsonwebtoken';
-import sendVerifyEmail from '../services/index.service.js';
 import { Location } from '../models/Location.model.js';
 import { sendEmail } from '../services/mail/mail.service.js';
 import { dirname } from '../lib/index.js';
 import { render } from 'pug';
 import LocationBudget from '../models/LocationBudget.js';
 import { transformBusinessToLocation } from './locationv2.controller.js';
+import { uploadMultipleFiles } from '../config/multer.js';
 
 const saveImagesWithModifiedName = async (files) => {
   const imageUrls = [];
@@ -268,8 +267,6 @@ export const completeBusinessRegistration = async (req, res) => {
     business.businessVerified = 'pending';
     const pendingVerification = await business.save();
 
-    // console.log({ businessLocationImages });
-
     const location = new Location({
       locationName: businessName,
       locationAddress: businessAddress,
@@ -284,7 +281,84 @@ export const completeBusinessRegistration = async (req, res) => {
       budgetClass: budgetClass._id,
       business: business._id,
     });
+    await location.save();
 
+    return res.status(200).json({ pendingVerification });
+  } catch (error) {
+    console.log(error);
+    return res.status(400).json({
+      error: 'Failed to complete business registration',
+      message: error.message,
+    });
+  }
+};
+
+export const completeBusinessRegistrationAppScript = async (req, res) => {
+  try {
+    const {
+      businessName,
+      businessAddress,
+      businessCategory,
+      businessEmail,
+      businessTelephone,
+      businessSubCategory,
+      businessBudget,
+      businessAbout,
+      businessLocationImages,
+    } = req?.body;
+
+    const uploadedFiles = await uploadMultipleFiles(businessLocationImages);
+    // console.log(uploadedFiles);
+    const budgetClass = await LocationBudget.findOne({ label: businessBudget });
+    // console.log(budgetClass);
+
+    const business = req.user;
+    if (business.businessVerified == 'verirfied') {
+      return res.status(400).json({
+        error: 'Verification already completed',
+      });
+    }
+    if (!businessLocationImages || !uploadedFiles) {
+      return res.status(400).json({
+        error: 'Cannot verify without images',
+      });
+    }
+
+    business.businessName = businessName;
+    business.businessAddress = businessAddress;
+    business.description = businessAbout;
+    business.businessCategory = businessCategory
+      .toLowerCase()
+      .replace(' & ', '-and-')
+      .replace(/\s+/g, '-');
+    business.businessSubCategory = businessSubCategory
+      .toLowerCase()
+      .replace(' & ', '-and-')
+      .replace(/\s+/g, '-');
+
+    business.businessEmail = businessEmail;
+    business.businessTelephone = businessTelephone;
+    business.budgetClass = budgetClass._id;
+    business.businessLocationImages = uploadedFiles;
+
+    business.businessVerified = 'pending';
+    // console.log(business);
+
+    const pendingVerification = await business.save();
+
+    const location = new Location({
+      locationName: businessName,
+      locationAddress: businessAddress,
+      locationCity: 'Lagos',
+      locationState: 'Lagos',
+      locationLGA: 'Lagos Mainland',
+      locationDescription: businessAbout,
+      locationImages: business.businessLocationImages,
+      locationCategory: business.businessCategory,
+      locationSubCategory: business.businessSubCategory,
+      budgetClass: budgetClass._id,
+      business: business._id,
+    });
     await location.save();
 
     return res.status(200).json({ pendingVerification });

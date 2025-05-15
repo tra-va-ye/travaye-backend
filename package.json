@@ -2,11 +2,11 @@
   "type": "module",
   "dependencies": {
     "@peteradeojo/laas-sdk": "^4.4.5",
-    "axios": "^1.6.2",
+    "axios": "^1.9.0",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.20.2",
     "chai": "^4.3.10",
-    "cloudinary": "^1.37.3",
+    "cloudinary": "^1.41.3",
     "connect-redis": "^7.1.1",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",

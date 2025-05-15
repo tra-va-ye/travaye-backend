@@ -37,7 +37,7 @@
     "name": "Food & Drinks",
     "slug": "food-and-drinks",
     "sub": [
-      { "name": "Restaurants & Bar", "slug": "restaurant-and-bar" },
+      { "name": "Restaurants & Bar", "slug": "restaurants-and-bar" },
       { "name": "Fast Food Spots", "slug": "fast-food-spot" },
       { "name": "Cafe and Pastry Shops", "slug": "cafe-and-pastry-shop" }
     ]
