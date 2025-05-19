@@ -341,8 +341,7 @@ export const completeBusinessRegistrationAppScript = async (req, res) => {
     business.budgetClass = budgetClass._id;
     business.businessLocationImages = uploadedFiles;
 
-    business.businessVerified = 'pending';
-    // console.log(business);
+    business.businessVerified = 'verified';
 
     const pendingVerification = await business.save();
 
@@ -440,6 +439,91 @@ export const updateBusinessSettings = async (req, res) => {
   } catch (err) {
     return res.status(400).json({
       error: 'Failed to update business details',
+      message: err.message,
+    });
+  }
+};
+
+export const updateDisplayPhoto = async (req, res) => {
+  const file = req.file;
+  const business = req.user;
+
+  if (!file)
+    return res.status(400).json({ message: 'Please submit a picture' });
+
+  if (['.jpg', '.png', '.jpeg'].includes(path.extname(file.originalname))) {
+    business.displayPhoto = file.path;
+    await business.save();
+
+    return res.json({ message: 'Upload successful' });
+  }
+
+  return res.status(400).json({ message: 'Invalid file type.' });
+};
+
+export const addLocationImages = async (req, res) => {
+  try {
+    const business = req.user;
+    const businessLocationImages = req.files.businessLocationImages || [];
+
+    if (!business)
+      return res.status(400).json({
+        error: 'Business not found',
+      });
+
+    if (!businessLocationImages.length)
+      return res.status(400).json({
+        error: 'No image to upload',
+      });
+
+    const newImages = await saveImagesWithModifiedName(businessLocationImages);
+
+    business.businessLocationImages.push(newImages);
+    await business.save();
+
+    const location = await Location.findOne({ business: business._id });
+    location.locationImages.push(newImages);
+    await location.save();
+
+    return res.status(200).json({
+      message: 'Images Uploaded Successfully',
+    });
+  } catch (err) {
+    return res.status(400).json({
+      error: 'Failed to Upload new Images',
+      message: err.message,
+    });
+  }
+};
+
+// https://res.cloudinary.com/dnvgmb5ys/image/upload/v1747337798/Assets/1747337794644-1brF8FPu2WbHAbUno4HnRGoIa1x3Wch_z.webp
+export const deleteLocationImage = async (req, res) => {
+  try {
+    const business = req.user;
+    const imageToDelete = req.body.image;
+
+    if (!business)
+      return res.status(400).json({
+        error: 'Business not found',
+      });
+    if (!imageToDelete)
+      return res.status(400).json({
+        error: 'No image to delete',
+      });
+
+    business.businessLocationImages.filter((img) => img !== imageToDelete);
+    await business.save();
+
+    const location = await Location.findOne({ business: business._id });
+    location.locationImages.filter((img) => img !== imageToDelete);
+    await location.save();
+
+    return res.status(200).json({
+      message: 'Image Deleted Successfully',
+    });
+  } catch (err) {
+    return res.status(400).json({
+      error: 'Failed to Delete Image',
       message: err.message,
     });
   }

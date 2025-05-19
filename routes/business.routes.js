@@ -4,13 +4,16 @@ import passport from 'passport';
 
 import { upload } from '../config/multer.js';
 import {
+  addLocationImages,
   completeBusinessRegistration,
   completeBusinessRegistrationAppScript,
   currentUser,
+  deleteLocationImage,
   loginBusiness,
   registerBusiness,
   registerBusinessAppScript,
   updateBusinessSettings,
+  updateDisplayPhoto,
   verifyBusiness,
 } from '../controllers/business.controller.js';
 const businessRouter = express.Router();
@@ -134,6 +137,26 @@ businessRouter.route('/complete-appscript').post(
   ),
   completeBusinessRegistrationAppScript
 );
+
+businessRouter
+  .route('/display-photo')
+  .post(
+    passport.authenticate('business', { session: false }),
+    upload.single('picture'),
+    updateDisplayPhoto
+  );
+
+businessRouter
+  .route('/location-images')
+  .put(
+    passport.authenticate('business', { session: false }),
+    upload.fields([{ name: 'businessLocationImages', maxCount: 10 }]),
+    addLocationImages
+  )
+  .delete(
+    passport.authenticate('business', { session: false }),
+    deleteLocationImage
+  );
 
 businessRouter
   .route('/edit-profile')
