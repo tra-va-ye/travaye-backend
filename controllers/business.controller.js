@@ -478,11 +478,11 @@ export const addLocationImages = async (req, res) => {
 
     const newImages = await saveImagesWithModifiedName(businessLocationImages);
 
-    business.businessLocationImages.push(newImages);
+    business.businessLocationImages.push(...newImages);
     await business.save();
 
     const location = await Location.findOne({ business: business._id });
-    location.locationImages.push(newImages);
+    location.locationImages.push(...newImages);
     await location.save();
 
     return res.status(200).json({
@@ -496,7 +496,6 @@ export const addLocationImages = async (req, res) => {
   }
 };
 
-// https://res.cloudinary.com/dnvgmb5ys/image/upload/v1747337798/Assets/1747337794644-1brF8FPu2WbHAbUno4HnRGoIa1x3Wch_z.webp
 export const deleteLocationImage = async (req, res) => {
   try {
     const business = req.user;
@@ -511,11 +510,15 @@ export const deleteLocationImage = async (req, res) => {
         error: 'No image to delete',
       });
 
-    business.businessLocationImages.filter((img) => img !== imageToDelete);
+    business.businessLocationImages = business.businessLocationImages.filter(
+      (img) => img !== imageToDelete
+    );
     await business.save();
 
     const location = await Location.findOne({ business: business._id });
-    location.locationImages.filter((img) => img !== imageToDelete);
+    location.locationImages = location.locationImages.filter(
+      (img) => img !== imageToDelete
+    );
     await location.save();
 
     return res.status(200).json({
