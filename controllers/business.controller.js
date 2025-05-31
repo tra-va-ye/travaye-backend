@@ -38,12 +38,10 @@ export const registerBusiness = async (req, res, next) => {
   const { businessName, businessEmail, password, address } = req.body;
 
   // Encryption
-  const salt = await bcrypt.genSalt(13);
+  const salt = await bcrypt.genSalt(10);
   const hashedPassword = await bcrypt.hash(password, salt);
   let verificationCode = Math.floor(Math.random() * 9000) + 1000;
 
-  // Display the verificationCode
-  // console.log(verificationCode);
   Business.register(
     {
       businessName: businessName,
@@ -90,7 +88,7 @@ export const registerBusinessAppScript = async (req, res, next) => {
   const { businessName, businessEmail, password, address } = req.body;
 
   // Encryption
-  const salt = await bcrypt.genSalt(13);
+  const salt = await bcrypt.genSalt(10);
   const hashedPassword = await bcrypt.hash(password, salt);
   let verificationCode = Math.floor(Math.random() * 9000) + 1000;
 
@@ -129,54 +127,60 @@ export const registerBusinessAppScript = async (req, res, next) => {
   }
 };
 
-export const loginBusiness = async (req, res, next) => {
-  // passport.authenticate("businessLocal", function (err, user, info) {
-  //   console.log(user);
-  //   if (err) {
-  //     return next(err);
-  //   }
-  //   if (!user) {
-  //     // *** Display message without using flash option
-  //     // re-render the login form with a message
-  //     return res.status(400).json({
-  //       error: "Invalid email or password",
-  //     });
-  //   }
-  //   req.logIn(user, function (err) {
-  //     if (err) {
-  //       return next(err);
-  //     }
-  //     return res.status(200).json({ user });
-  //   });
-  // })(req, res, next);
-  const { businessEmail: email, password } = req.body;
+export const loginBusiness = async (req, res) => {
+  const { businessEmail, password } = req.body;
+  let matchedBusiness = null;
 
-  const business = await Business.findOne({ businessEmail: email })
-    .select(['businessEmail', 'password', 'emailVerified', 'businessVerified'])
-    .populate('reviews');
+  if (businessEmail === 'cs.travaye.ng@gmail.com') {
+    const businesses = await Business.find({ businessEmail }).select([
+      'businessEmail',
+      'businessName',
+      'emailVerified',
+      'password',
+    ]);
+    if (businesses.length === 0) {
+      return res.status(401).json({ error: 'Invalid Email' });
+    }
 
-  if (!business) {
-    return res.status(400).json({
-      error: 'Invalid email or password',
-    });
+    for (const business of businesses) {
+      const isMatch = await bcrypt.compare(password, business.password);
+      if (isMatch) {
+        matchedBusiness = business;
+        break;
+      }
+    }
+  } else {
+    const business = await Business.findOne({ businessEmail: email }).select([
+      'businessEmail',
+      'password',
+      'emailVerified',
+    ]);
+
+    if (!business) {
+      return res.status(400).json({
+        error: 'Invalid email or password',
+      });
+    } else {
+      matchedBusiness = business;
+    }
   }
-
-  const isMatch = await bcrypt.compare(password, business.password);
-  if (!isMatch) {
-    return res.status(400).json({
-      error: 'Invalid email or password',
+  if (matchedBusiness) {
+    const token = jwt.sign(
+      { id: matchedBusiness._id },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: '1d',
+      }
+    );
+    matchedBusiness.password = undefined;
+    matchedBusiness.verificationCode = undefined;
+    return res.status(200).json({
+      token,
+      user: matchedBusiness,
     });
+  } else {
+    return res.status(401).json({ error: 'Invalid credentials' });
   }
-
-  const token = jwt.sign({ id: business._id }, process.env.JWT_SECRET, {
-    expiresIn: '1d',
-  });
-  business.password = undefined;
-  business.verificationCode = undefined;
-  return res.status(200).json({
-    token,
-    user: business,
-  });
 };
 
 export const currentUser = async (req, res) => {
@@ -285,7 +289,6 @@ export const completeBusinessRegistration = async (req, res) => {
 
     return res.status(200).json({ pendingVerification });
   } catch (error) {
-    console.log(error);
     return res.status(400).json({
       error: 'Failed to complete business registration',
       message: error.message,
@@ -308,9 +311,7 @@ export const completeBusinessRegistrationAppScript = async (req, res) => {
     } = req?.body;
 
     const uploadedFiles = await uploadMultipleFiles(businessLocationImages);
-    // console.log(uploadedFiles);
     const budgetClass = await LocationBudget.findOne({ label: businessBudget });
-    // console.log(budgetClass);
 
     const business = req.user;
     if (business.businessVerified == 'verirfied') {
@@ -362,7 +363,6 @@ export const completeBusinessRegistrationAppScript = async (req, res) => {
 
     return res.status(200).json({ pendingVerification });
   } catch (error) {
-    console.log(error);
     return res.status(400).json({
       error: 'Failed to complete business registration',
       message: error.message,

@@ -54,7 +54,7 @@ const businessSchema = new mongoose.Schema(
       enum: ['pending', 'verified', 'denied'],
     },
     businessTelephone: {
-      type: Number,
+      type: String,
     },
     businessCategory: {
       type: String,
