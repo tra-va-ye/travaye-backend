@@ -43,9 +43,6 @@ const locationSchema = new mongoose.Schema(
     locationCategory: {
       type: String,
     },
-    // locationAddedBy: {
-    //   type: String,
-    // },
     locationSubCategory: {
       type: String,
     },
