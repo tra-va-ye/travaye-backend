@@ -310,18 +310,20 @@ export const completeBusinessRegistrationAppScript = async (req, res) => {
       businessLocationImages,
     } = req?.body;
 
-    const uploadedFiles = await uploadMultipleFiles(businessLocationImages);
+    // if (!businessLocationImages) {
+    // return res.status(400).json({
+    //   error: 'Cannot verify without images',
+    // });
+    // }
+    const uploadedFiles = businessLocationImages
+      ? await uploadMultipleFiles(businessLocationImages)
+      : [];
     const budgetClass = await LocationBudget.findOne({ label: businessBudget });
 
     const business = req.user;
     if (business.businessVerified == 'verirfied') {
       return res.status(400).json({
         error: 'Verification already completed',
-      });
-    }
-    if (!businessLocationImages || !uploadedFiles) {
-      return res.status(400).json({
-        error: 'Cannot verify without images',
       });
     }
 
@@ -341,9 +343,7 @@ export const completeBusinessRegistrationAppScript = async (req, res) => {
     business.businessTelephone = businessTelephone;
     business.budgetClass = budgetClass._id;
     business.businessLocationImages = uploadedFiles;
-
     business.businessVerified = 'verified';
-
     const pendingVerification = await business.save();
 
     const location = new Location({
