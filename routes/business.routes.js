@@ -129,7 +129,7 @@ businessRouter.route('/complete-appscript').post(
       businessSubCategory: Joi.string().required(),
       businessAbout: Joi.string().optional(),
       businessBudget: Joi.string().required(),
-      businessLocationImages: Joi.array().items(Joi.string()).required(),
+      // businessLocationImages: Joi.array().items(Joi.string()).required(),
     }),
     {
       allowUnknown: true,
