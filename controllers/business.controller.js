@@ -235,6 +235,12 @@ export const completeBusinessRegistration = async (req, res) => {
       businessAbout,
     } = req?.body;
 
+    if (await Location.findOne({ locationName: businessName })) {
+      return res.status(400).json({
+        error: 'Location already exists',
+      });
+    }
+
     const businessLocationImages = req.files.businessLocationImages || [];
     const budgetClass = await LocationBudget.findOne({ label: businessBudget });
 
@@ -310,11 +316,6 @@ export const completeBusinessRegistrationAppScript = async (req, res) => {
       businessLocationImages,
     } = req?.body;
 
-    // if (!businessLocationImages) {
-    // return res.status(400).json({
-    //   error: 'Cannot verify without images',
-    // });
-    // }
     const uploadedFiles = businessLocationImages
       ? await uploadMultipleFiles(businessLocationImages)
       : [];
