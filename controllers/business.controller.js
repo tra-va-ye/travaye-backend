@@ -150,7 +150,7 @@ export const loginBusiness = async (req, res) => {
       }
     }
   } else {
-    const business = await Business.findOne({ businessEmail: email }).select([
+    const business = await Business.findOne({ businessEmail }).select([
       'businessEmail',
       'password',
       'emailVerified',
@@ -315,6 +315,12 @@ export const completeBusinessRegistrationAppScript = async (req, res) => {
       businessAbout,
       businessLocationImages,
     } = req?.body;
+
+    if (await Location.findOne({ locationName: businessName })) {
+      return res.status(400).json({
+        error: 'Location already exists',
+      });
+    }
 
     const uploadedFiles = businessLocationImages
       ? await uploadMultipleFiles(businessLocationImages)

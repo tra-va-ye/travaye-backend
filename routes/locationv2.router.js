@@ -31,7 +31,7 @@ router.get('/', async (req, res) => {
     console.log('this endpoint');
     const locations = await Location.find({
       $expr: {
-        $gt: [{ $size: '$locationImages' }, 1],
+        $gt: [{ $size: '$locationImages' }, 0],
       },
     })
       .populate('business')
