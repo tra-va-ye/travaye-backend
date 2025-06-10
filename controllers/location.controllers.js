@@ -180,17 +180,19 @@ export const planTrip = async (req, res) => {
       query.locationSubCategory = { $in: [...subcategory.split(',')] };
     }
 
-    const locations = await Location.find(query)
-      .populate([
-        {
-          path: 'business',
-          populate: {
-            path: 'budgetClass',
-          },
+    const locations = await Location.find({
+      ...query,
+      $expr: {
+        $gt: [{ $size: '$locationImages' }, 0],
+      },
+    }).populate([
+      {
+        path: 'business',
+        populate: {
+          path: 'budgetClass',
         },
-      ])
-      .skip((page - 1) * count)
-      .limit(count);
+      },
+    ]);
 
     let filteredLocations = locations;
 
@@ -201,17 +203,17 @@ export const planTrip = async (req, res) => {
       filteredLocations = filtered;
     }
 
-    const meta = {
-      prev: page > 1 ? page - 1 : null,
-      next: filteredLocations.length < count ? null : page + 1,
-      from: (page - 1) * count + 1,
-      to: (page - 1) * count + filteredLocations.length,
-      page,
-      count,
-      total: await Business.countDocuments({ businessVerified: 'verified' }),
-    };
+    // const meta = {
+    //   prev: page > 1 ? page - 1 : null,
+    //   next: filteredLocations.length < count ? null : page + 1,
+    //   from: (page - 1) * count + 1,
+    //   to: (page - 1) * count + filteredLocations.length,
+    //   page,
+    //   count,
+    //   total: await Business.countDocuments({ businessVerified: 'verified' }),
+    // };
 
-    return res.status(200).json({ data: filteredLocations, meta });
+    return res.status(200).json({ data: filteredLocations });
   } catch (err) {
     console.log(err);
     return res.status(400).json({ error: err.message });
